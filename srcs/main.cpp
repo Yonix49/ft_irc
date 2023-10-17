@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/16 19:43:39 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/17 11:24:01 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 int main(int argc, char **argv)
 {
+	Server	serv;
 	if (argc != 3)
 	{
 		std::cerr << "Usage: <port> <password>" << std::endl;
@@ -37,8 +38,8 @@ int main(int argc, char **argv)
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Port must be between 0 and 65535" << std::endl, 2);
 	std::string password = std::string(argv[2]);
 	
+	serv.createServerSocket(port);
 	// std::cout << password << std::endl; 
-
 
 	
 	// else

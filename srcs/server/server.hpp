@@ -3,22 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/16 19:33:40 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/17 11:23:47 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DEF_SERVER
-#define DEF_SERVER
-#include <iostream>
-#include <string>
-#include <cstring>
-#include <fstream>
-#include <cstdlib>
-#include <string>
-#include <vector>
+# define DEF_SERVER
+# include <iostream>
+# include <unistd.h>
+# include <string>
+# include <cstring>
+# include <fstream>
+# include <cstdlib>
+# include <string>
+# include <vector>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+
 struct ServerSocket
 {
 	int socketDescriptor;  // Le descripteur de socket
@@ -37,6 +42,7 @@ public:
 	Server(const Server& src);
 	//operateur = 
 	Server& operator=(const Server& src);
+	int createServerSocket(int port);
 
 
 private:
@@ -44,8 +50,6 @@ private:
 	ServerSocket m_socket_server;
 	std::string m_password;
 	std::vector<int> m_vec;
-	
-	ServerSocket createServerSocket(int port);
 };
 
 #endif
