@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/20 15:31:05 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/20 18:00:03 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,9 @@ int Server::createServerSocket(int port)
 	serverAddress.sin_family = AF_INET;
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 	serverAddress.sin_port = htons(port); // Port IRC par défaut
+	int option = 1;
+	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option)) < 0)
+		throw std::runtime_error("Setsockopt failed");
 	if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
 	{
 		std::cerr << "Erreur lors de la liaison de la socket à l'adresse et au port." << std::endl;
@@ -102,14 +105,17 @@ int Server::createServerSocket(int port)
 		{
 			if (FD_ISSET(i, &set_read))
 			{
-				if (i == serverSocket)
+				clientSocket = accept(i, (struct sockaddr*)&clientAddress, &clientAddrLen);
+				if (clientSocket == serverSocket)
 				{
-					clientSocket = accept(i, (struct sockaddr*)&clientAddress, &clientAddrLen);
 					if (clientSocket == -1)
 					{
 						std::cerr << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
 						return 1;
 					}
+					int writed = write(clientSocket, "salut", 5);
+					std::cout << "writed = " << writed << std::endl;
+					
 					clientSockets.push_back(clientSocket);
 					FD_SET(clientSocket, &set_read);
 					if (clientSocket > maxFd) {
@@ -128,7 +134,7 @@ int Server::createServerSocket(int port)
 				else
 				{
 					std::cout << "before recv" << std::endl;
-					bytesRead = recv(i, buffer, sizeof(buffer), 0);
+					bytesRead = recv(clientSocket, buffer, sizeof(buffer), 0);
 					if (bytesRead < 0)
 					{
 						std::cerr << "Erreur lors de la réception de données du client." << std::endl;
@@ -140,8 +146,9 @@ int Server::createServerSocket(int port)
 						break;
 					}
 					std::cout << "recv succes" << std::endl;
-					std::string message(buffer, bytesRead);
-					std::cout << "Message du client : " << message << std::endl;
+					std::cout << "buffer = " << buffer << std::endl;
+					// std::string message(buffer, bytesRead);
+					// std::cout << "Message du client : " << message << std::endl;
 				}
 			}
 		}
