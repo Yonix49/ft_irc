@@ -1,5 +1,17 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/10/20 13:39:44 by kgezgin           #+#    #+#              #
+#    Updated: 2023/10/20 13:39:50 by kgezgin          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g3
 CXXFLAGS += -MMD
 INCLUDE = -I.
 SRCDIR = srcs

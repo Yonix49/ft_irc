@@ -6,23 +6,25 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/17 11:23:47 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/20 12:44:56 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DEF_SERVER
 # define DEF_SERVER
 # include <iostream>
+# include <fstream>
 # include <unistd.h>
 # include <string>
-# include <cstring>
-# include <fstream>
 # include <cstdlib>
+# include <cstring>
 # include <string>
+# include <cerrno>
 # include <vector>
 # include <sys/socket.h>
-# include <netinet/in.h>
+# include <sys/select.h>
 # include <arpa/inet.h>
+# include <netinet/in.h>
 
 struct ServerSocket
 {
