@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/17 11:24:01 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/23 14:56:33 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ int main(int argc, char **argv)
 	}
 	char *end_ptr;
 	long int port = strtol(argv[1], &end_ptr, 10);
+	serv.setPort(port);
 	std::cout << port << std::endl;
 	if (*end_ptr != '\0')
 		return(std::cerr << "Error: Invalid port  " << *end_ptr << std::endl, 4);
@@ -38,7 +39,7 @@ int main(int argc, char **argv)
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Port must be between 0 and 65535" << std::endl, 2);
 	std::string password = std::string(argv[2]);
 	
-	serv.createServerSocket(port);
+	serv.createServerSocket();
 	// std::cout << password << std::endl; 
 
 	

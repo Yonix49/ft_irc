@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/20 12:44:56 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/23 17:24:16 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,16 @@
 # include <sys/select.h>
 # include <arpa/inet.h>
 # include <netinet/in.h>
+# include <sys/epoll.h>
 
 struct ServerSocket
 {
-	int socketDescriptor;  // Le descripteur de socket
-	std::string ipAddress; // L'adresse IP sur laquelle le serveur écoute
-	int port;			   // Le numéro de port sur lequel le serveur écoute
-						   // Autres informations, si nécessaires
+	struct sockaddr_in	serverAddress;
+	struct sockaddr_in	clientAddress;
+	socklen_t			clientAddrLen;
+	int					clientSocket;
+	int					serverSocket;
+	int					epollFd;  // Crée un descripteur de fichier epoll
 };
 
 class Server
@@ -43,15 +46,22 @@ public:
 	Server(int port, const std::string &password);
 	Server(const Server& src);
 	//operateur = 
-	Server& operator=(const Server& src);
-	int createServerSocket(int port);
+	Server& 			operator=(const Server& src);
+
+	int 				createServerSocket();
+	int 				launchSocket();
+	int 				recieve_data(int fd);
+	int 				newUser(int fd);
+
+	void				setPort(long int port);
 
 
 private:
-	int m_port;
-	ServerSocket m_socket_server;
-	std::string m_password;
-	std::vector<int> m_vec;
+	int 				_port;
+	std::string			_password;
+	std::vector<struct epoll_event>	_vec;
+	ServerSocket		_serv;
+	
 };
 
 #endif
