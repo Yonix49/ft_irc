@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/24 14:24:05 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/24 17:10:03 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Server::Server(int port, const std::string &password)
 Server::Server(const Server &src)
 {
 	_password = src._password;
-	_vec = src._vec;
+	// _vec = src._vec;
 	_serv = src._serv;
 	_port = src._port;
 }
@@ -44,7 +44,7 @@ Server &Server::operator=(const Server &src)
 	if (this != &src)
 	{
 		this->_password = src._password;
-		this->_vec = src._vec;
+		// this->_vec = src._vec;
 		this->_serv = src._serv;
 		this->_port = src._port;
 	}
@@ -116,7 +116,7 @@ int Server::createServerSocket()
 int	Server::recieve_data(int fd)
 {
 	int		bytesRead;
-	int		bytesSent;
+	// int		bytesSent;
 	int		bytesSent2;
 	char	buffer[1024];
 
@@ -136,10 +136,10 @@ int	Server::recieve_data(int fd)
 	{
 		buffer[bytesRead] = '\0';
 		std::cout << "Message du client sur le socket " << fd << ": " << buffer << std::endl;
-		bytesSent = send(fd, "Message reçu par le serveur.\n", 30, 0);
-		bytesSent = send(fd - 1, buffer, strlen(buffer), 0);
-		if (bytesSent < 0)
-			std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
+		_channels[0].sendMessages(buffer);
+		// bytesSent = send(fd, "Message reçu par le serveur.\n", 30, 0);
+		// if (bytesSent < 0)
+			// std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
 		// Implémentez ici la logique de irc
 	}
 	return (0);
@@ -149,7 +149,11 @@ int	Server::recieve_data(int fd)
 int	Server::newUser(int fd)
 {
 	struct	epoll_event clientEvent;
-	int		bytesSent;
+	int					bytesSent;
+ 	std::stringstream 	ss;
+    ss << "User" << fd;
+    std::string			nickname(ss.str());
+	User				newUser(nickname);
 	
 	clientEvent.events = EPOLLIN;
 	clientEvent.data.fd = _serv.clientSocket;
@@ -158,8 +162,10 @@ int	Server::newUser(int fd)
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	_vec.push_back(clientEvent);
-	(void)fd;
+	newUser.setFd(fd);
+	_users.push_back(newUser);
+	_channels[0].addUser(newUser);
+	// (void)fd;
 	bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
 	if (bytesSent < 0)
 		std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
@@ -196,6 +202,9 @@ int	Server::launchSocket()
 	}
 	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
 
+	Channel		newChannel("channel_1");
+	
+	_channels.push_back(newChannel);
 	return (0);
 }
 

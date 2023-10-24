@@ -6,11 +6,11 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 13:03:12 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/24 13:06:49 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/24 15:35:52 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "server/server.hpp"
+# include "../includes.hpp"
 
 void	signal_ctrl_c(int signo)
 {
