@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/23 14:56:33 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/24 13:04:39 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 #include "server/server.hpp"
+
+int		g_signal = 0;
 
 int main(int argc, char **argv)
 {

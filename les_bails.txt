@@ -1,0 +1,37 @@
+1 - gerer la connection genre username et password
+
+2 - gerer les users dans un vector lors des connect et disconnect
+
+3 - gerer les modos (donc les commandes qui vont avec) et les users basique
+
+4 - gerer les channels dans une map et donc bien stocker les
+	users pour pouvoir envoyer un message correctement a tout les membres du channel
+
+5 - bien recuperer les messages, parser et detecter les commandes avec les options etc
+
+6 - faire toutes les commandes (JOIN, MSG, PRIVMSG etc...)
+
+7 - quitter le programme propement
+
+
+Class User
+{
+	username
+	fd
+	clientadress
+	etc...
+}
+
+Class channel
+{
+	name
+	nb_user
+	map(user)
+	etc...
+}
+
+Class server
+{
+	class channel
+	et tout le reste
+}

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/23 17:24:16 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/24 13:07:03 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 # include <arpa/inet.h>
 # include <netinet/in.h>
 # include <sys/epoll.h>
+# include <signal.h>
+
+extern int			g_signal;
 
 struct ServerSocket
 {
@@ -63,5 +66,8 @@ private:
 	ServerSocket		_serv;
 	
 };
+
+void	signal_ctrl_c(int signo);
+
 
 #endif
