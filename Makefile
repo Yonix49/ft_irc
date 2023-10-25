@@ -6,7 +6,7 @@
 #    By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/20 13:39:44 by kgezgin           #+#    #+#              #
-#    Updated: 2023/10/20 13:39:50 by kgezgin          ###   ########.fr        #
+#    Updated: 2023/10/24 17:17:47 by kgezgin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CXXFLAGS += -MMD
 INCLUDE = -I.
 SRCDIR = srcs
 OBJDIR = obj
-SOURCES = $(wildcard $(SRCDIR)/*.cpp) $(wildcard $(SRCDIR)/server/*.cpp)
+SOURCES = $(wildcard $(SRCDIR)/*.cpp) $(wildcard $(SRCDIR)/server/*.cpp) $(wildcard $(SRCDIR)/channel/*.cpp) $(wildcard $(SRCDIR)/user/*.cpp) $(wildcard $(SRCDIR)/utils/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 DEPS = $(OBJS:.o=.d)
 NAME = irc

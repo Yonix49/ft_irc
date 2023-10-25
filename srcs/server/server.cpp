@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/24 14:24:05 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:38:06 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Server::Server(int port, const std::string &password)
 Server::Server(const Server &src)
 {
 	_password = src._password;
-	_vec = src._vec;
+	// _vec = src._vec;
 	_serv = src._serv;
 	_port = src._port;
 }
@@ -44,7 +44,7 @@ Server &Server::operator=(const Server &src)
 	if (this != &src)
 	{
 		this->_password = src._password;
-		this->_vec = src._vec;
+		// this->_vec = src._vec;
 		this->_serv = src._serv;
 		this->_port = src._port;
 	}
@@ -64,6 +64,7 @@ int Server::createServerSocket()
 	struct epoll_event	event;
 	struct epoll_event	events[10];  // Nombre maximal d'événements à gérer
 	int					fd;
+	int					isNewUser;
 
 	_serv.epollFd = epoll_create(1);
 	if (_serv.epollFd == -1)
@@ -81,6 +82,7 @@ int Server::createServerSocket()
 		return 1;
 	}
 	signal(SIGINT, signal_ctrl_c);
+	isNewUser = 0;
 	while (!g_signal)
 	{
 		numEvents = epoll_wait(_serv.epollFd, events, 10, -1);
@@ -102,10 +104,14 @@ int Server::createServerSocket()
 				if (_serv.clientSocket == -1)
 					std::cerr << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
 				else
-					newUser(_serv.clientSocket);
+					isNewUser = 1;
 			}
 			else
-				recieve_data(fd);
+			{
+					// newUser(_serv.clientSocket);
+				recieve_data(fd, isNewUser);
+				isNewUser = 0;
+			}
 		}
 	}
 	close (_serv.clientSocket);
@@ -113,10 +119,10 @@ int Server::createServerSocket()
 }
 
 
-int	Server::recieve_data(int fd)
+int	Server::recieve_data(int fd, int isNewUser)
 {
 	int		bytesRead;
-	int		bytesSent;
+	// int		bytesSent;
 	int		bytesSent2;
 	char	buffer[1024];
 
@@ -136,21 +142,28 @@ int	Server::recieve_data(int fd)
 	{
 		buffer[bytesRead] = '\0';
 		std::cout << "Message du client sur le socket " << fd << ": " << buffer << std::endl;
-		bytesSent = send(fd, "Message reçu par le serveur.\n", 30, 0);
-		bytesSent = send(fd - 1, buffer, strlen(buffer), 0);
-		if (bytesSent < 0)
-			std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
+		if (isNewUser)
+			newUser(fd, buffer);
 		// Implémentez ici la logique de irc
 	}
 	return (0);
 }
 
 
-int	Server::newUser(int fd)
+int	Server::newUser(int fd, char buffer[1024])
 {
 	struct	epoll_event clientEvent;
-	int		bytesSent;
+	int					bytesSent;
+	User				newUser;
 	
+	if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
+	{
+		// temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
+		// check_connection
+		bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
+		return (-1);
+	}
+	_users.push_back(newUser);
 	clientEvent.events = EPOLLIN;
 	clientEvent.data.fd = _serv.clientSocket;
 	if (epoll_ctl(_serv.epollFd, EPOLL_CTL_ADD, _serv.clientSocket, &clientEvent) == -1)
@@ -158,16 +171,21 @@ int	Server::newUser(int fd)
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	_vec.push_back(clientEvent);
-	(void)fd;
+	
 	bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
 	if (bytesSent < 0)
 		std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
 	std::cout << "User connected" << std::endl;
-	// ajouter user a la socket.
 	return 0;
 }
 
+
+int	Server::checkConnection(int fd, char buffer[1024])
+{
+	// check en premier le mdp(coder la fonction PASS)
+	// recup nickname (coder la fonction NICK)
+	// recup username firstname lastname (coder la fonction USER)
+}
 
 int	Server::launchSocket()
 {
@@ -196,6 +214,9 @@ int	Server::launchSocket()
 	}
 	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
 
+	Channel		newChannel("channel_1");
+	
+	_channels.push_back(newChannel);
 	return (0);
 }
 
