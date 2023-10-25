@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/24 17:16:46 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 13:25:37 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ class Server
 	
 		int 					createServerSocket();
 		int 					launchSocket();
-		int 					recieve_data(int fd);
-		int 					newUser(int fd);
+		int 					recieve_data(int fd, int isNewUser);
+		int						checkConnection(int fd, char buffer[1024]);
+		int 					newUser(int fd, char buffer[1024]);
 	
 		void					setPort(long int port);
 	

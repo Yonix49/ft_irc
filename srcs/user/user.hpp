@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/24 17:14:18 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 12:57:54 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class User
 
 	private:
 		std::string		_nickname;
+		std::string		_username;
 		int				_fd;
 		int				_isOperator;
 
