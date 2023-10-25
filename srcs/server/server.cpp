@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/25 13:38:06 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 18:18:06 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,15 @@ void	Server::setPort(long int port)
 	_port = port;
 }
 
+User	*Server::getUserNo(int fd)
+{
+	for (std::vector<User>::iterator it = _users.begin() ; it != _users.end() ; ++it)
+	{
+		if (it->getFd() == fd)
+			return &(*it);
+	}
+	return (NULL);
+}
 
 
 int Server::createServerSocket()
@@ -104,12 +113,15 @@ int Server::createServerSocket()
 				if (_serv.clientSocket == -1)
 					std::cerr << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
 				else
+				{
+					newUser(_serv.clientSocket, NULL);
 					isNewUser = 1;
+					
+				}
 			}
 			else
 			{
-					// newUser(_serv.clientSocket);
-				recieve_data(fd, isNewUser);
+				recieve_data(fd, 0);
 				isNewUser = 0;
 			}
 		}
@@ -121,6 +133,7 @@ int Server::createServerSocket()
 
 int	Server::recieve_data(int fd, int isNewUser)
 {
+	(void)isNewUser;
 	int		bytesRead;
 	// int		bytesSent;
 	int		bytesSent2;
@@ -143,26 +156,39 @@ int	Server::recieve_data(int fd, int isNewUser)
 		buffer[bytesRead] = '\0';
 		std::cout << "Message du client sur le socket " << fd << ": " << buffer << std::endl;
 		if (isNewUser)
-			newUser(fd, buffer);
-		// Implémentez ici la logique de irc
+		{
+			if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
+			{
+				std::cout << "ici check connection" << std::endl;
+				return (-1);
+				//     // temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
+				//     // check_connection
+				//     bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
+				//     return (-1);
+			}
+			std::cout << "nickname = " << _users.back().getNickname() << std::endl;
+			std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+			size_t messageLength = welcomeMessage.length();
+			if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+				std::cout << "error envoie RPL" << std::endl;
+		}
+		else
+			launchCmd(buffer, fd);
 	}
 	return (0);
 }
 
-
 int	Server::newUser(int fd, char buffer[1024])
 {
+	(void)buffer;
 	struct	epoll_event clientEvent;
 	int					bytesSent;
-	User				newUser;
-	
-	if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
-	{
-		// temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
-		// check_connection
-		bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
-		return (-1);
-	}
+	(void)bytesSent;
+	std::stringstream 	ss;
+    ss << "User" << fd;
+    std::string			nickname(ss.str());
+	User				newUser(nickname);
+	newUser.setFd(fd);
 	_users.push_back(newUser);
 	clientEvent.events = EPOLLIN;
 	clientEvent.data.fd = _serv.clientSocket;
@@ -171,21 +197,78 @@ int	Server::newUser(int fd, char buffer[1024])
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	
-	bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
-	if (bytesSent < 0)
-		std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
+	recieve_data(fd, 1);
+
+	// std::string kenan("kenan");
+	// std::string welcomeMessage = RPL_WELCOME(kenan);
+	// size_t messageLength = welcomeMessage.length();
+	// if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+		// std::cout << "error envoie RPL" << std::endl;
+	// bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
+	// if (bytesSent < 0)
+		// std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
 	std::cout << "User connected" << std::endl;
 	return 0;
 }
 
-
-int	Server::checkConnection(int fd, char buffer[1024])
+int Server::checkConnection(int fd, char buffer[1024])
 {
-	// check en premier le mdp(coder la fonction PASS)
-	// recup nickname (coder la fonction NICK)
-	// recup username firstname lastname (coder la fonction USER)
+    (void)(fd);
+
+    std::vector<std::string> str = get_cmdLine(buffer);
+    if (check_password(str) != 0)
+    {
+        std::cout << "\033[31mMot de passe incorecte\033[0m" << std::endl;
+    }
+    if (check_nickname(str) != 0)
+    {
+        std::cout << "\033[31m Nick name incorrecte \033[0m" << std::endl;
+    }
+    // Afficher le contenu du vecteur
+    for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
+    {
+        std::cout << "Élément : " << *it << std::endl;
+    }
+
+    // Le reste de votre logique ici...
+
+    return 1;
+    // check en premier le mdp(coder la fonction PASS)
+    // recup nickname (coder la fonction NICK)
+    // recup username firstname lastname (coder la fonction USER)
 }
+
+
+int	Server::launchCmd(char buffer[1024], int fd)
+{
+	std::vector<std::string> cmdLine;
+
+	cmdLine = get_cmdLine(buffer);
+	if (!cmdLine[0].compare("/JOIN") || !cmdLine[0].compare("/join"))
+		join(cmdLine, fd);
+	return (0);
+}
+
+
+
+std::vector<std::string>	Server::get_cmdLine(char buffer[1024])
+{
+	std::istringstream iss(buffer);
+
+	std::vector<std::string> words;
+	std::string word;
+
+	while (iss >> word)
+		words.push_back(word);
+
+	// for (std::vector<std::string>::iterator it = cmdLine.begin(); it != cmdLine.end(); ++it)
+	// {
+	// 	const std::string& w = *it;
+	// 	std::cout << "Mot : " << w << std::endl;
+	// }
+	return (words);
+}
+
 
 int	Server::launchSocket()
 {
@@ -213,10 +296,6 @@ int	Server::launchSocket()
 		return 1;
 	}
 	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
-
-	Channel		newChannel("channel_1");
-	
-	_channels.push_back(newChannel);
 	return (0);
 }
 

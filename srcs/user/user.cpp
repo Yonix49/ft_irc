@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/24 17:08:03 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 16:45:49 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,18 @@ void	User::setFd(int fd)
 {
 	_fd = fd;
 }
+
+int	&User::getFd()
+{
+	return (_fd);
+}
+
+std::string		&User::getNickname()
+{
+	return (_nickname);
+}
+
+
 
 void	User::setIsOperator(int isOperator)
 {

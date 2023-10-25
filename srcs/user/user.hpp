@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/25 12:57:54 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 16:45:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ class User
 		User(const User& src);
 		User& 			operator=(const User& src);
 
+		int				&getFd();
+		std::string		&getNickname();
 		void			setNickname(std::string name);
 		void			setFd(int fd);
 		void			setIsOperator(int isOperator);

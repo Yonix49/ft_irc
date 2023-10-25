@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/25 13:25:37 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 17:19:16 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,26 @@ class Server
 		Server(int port, const std::string &password);
 		Server(const Server& src);
 		//operateur = 
-		Server& 				operator=(const Server& src);
+		Server& 					operator=(const Server& src);
 	
 		int 					createServerSocket();
 		int 					launchSocket();
 		int 					recieve_data(int fd, int isNewUser);
 		int						checkConnection(int fd, char buffer[1024]);
 		int 					newUser(int fd, char buffer[1024]);
-	
+
+		int						launchCmd(char buffer[1024], int fd);
+		std::vector<std::string> get_cmdLine(char buffer[1024]);
+
+		int						join(std::vector<std::string> cmdLine, int fd);
+		int						channelExist(std::string channelName);
+
+		int 					check_nickname(std::vector<std::string> str);
+		int 					check_password(std::vector<std::string> str);
+
+
 		void					setPort(long int port);
-	
+		User					*getUserNo(int fd);
 	
 	private:
 		int 					_port;

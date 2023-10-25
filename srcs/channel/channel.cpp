@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/24 17:18:15 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/25 17:02:30 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,21 @@ void	Channel::setName(std::string name)
 	_name = name;
 }
 
+void	Channel::setTopic(std::string topic)
+{
+	_topic = topic;
+}
+
+std::string	&Channel::getName(void)
+{
+	return (_name);
+}
+
+std::string	Channel::getTopic(void)
+{
+	return (_topic);
+}
+
 
 void	Channel::setUsers(std::vector<User> users)
 {
@@ -64,6 +79,10 @@ void	Channel::setIsOperator(std::vector<User> operators)
 
 void	Channel::addUser(User user)
 {
+	// check si le user n'est pas deja dans le channel
+	// essayer de faire ca avec un try catch
+
+	// il faut aussi gerer si le user est un operateur ou pas
 	_users.push_back(user);
 }
 
