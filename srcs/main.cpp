@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/24 13:04:39 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/26 17:11:22 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ int main(int argc, char **argv)
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Invalid caracter found" << std::endl, 2);
 	else if ((port < 0 || port > 65535))
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Port must be between 0 and 65535" << std::endl, 2);
-	std::string password = std::string(argv[2]);
-	
+	serv.setPassword(std::string(argv[2]));
 	serv.createServerSocket();
 	// std::cout << password << std::endl; 
 
