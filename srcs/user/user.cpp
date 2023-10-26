@@ -3,24 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/25 16:45:49 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/26 21:58:26 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../user/user.hpp"
-
+#include "../user/user.hpp"
 
 User::User()
 {
+	_check_nc = 0;
 }
 
 User::User(std::string name) : _nickname(name)
 {
 }
-
 
 User::~User()
 {
@@ -32,6 +31,7 @@ User::User(const User &src)
 	_nickname = src._nickname;
 	_fd = src._fd;
 	_isOperator = src._isOperator;
+	_check_nc = 0;
 }
 
 // Opérateur d'assignation
@@ -46,35 +46,48 @@ User &User::operator=(const User &src)
 	return *this;
 }
 
-void	User::setNickname(std::string name)
+void User::setNickname(std::string name)
 {
 	_nickname = name;
 }
 
-
-void	User::setFd(int fd)
+void User::setFd(int fd)
 {
 	_fd = fd;
 }
+void User::setRealname(std::string name)
+{
+	_realname = name;
+}
 
-int	&User::getFd()
+void User::setUsername(std::string name)
+{
+	_username = name;
+}
+int &User::getFd()
 {
 	return (_fd);
 }
+void User::incre_nc_check(void)
+{
+	this->_check_nc++;
+}
+int &User::get_nc_check(void)
+{
+	return (_check_nc);
+}
 
-std::string		&User::getNickname()
+std::string &User::getNickname()
 {
 	return (_nickname);
 }
 
-
-
-void	User::setIsOperator(int isOperator)
+void User::setIsOperator(int isOperator)
 {
 	_isOperator = isOperator;
 }
 
-void	User::sendMessage(char buffer[1024])
+void User::sendMessage(char buffer[1024])
 {
 	int bytesSent;
 	bytesSent = send(_fd, buffer, strlen(buffer), 0);
