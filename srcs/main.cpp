@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/26 17:11:22 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/27 19:25:52 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ int main(int argc, char **argv)
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Port must be between 0 and 65535" << std::endl, 2);
 	serv.setPassword(std::string(argv[2]));
 	serv.createServerSocket();
+	// serv.initializeCommandMap();
 	// std::cout << password << std::endl; 
 
 	

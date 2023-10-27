@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/26 21:58:26 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/27 20:12:37 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 User::User()
 {
 	_check_nc = 0;
+	_in_server = false;
+
 }
 
 User::User(std::string name) : _nickname(name)
@@ -50,6 +52,10 @@ void User::setNickname(std::string name)
 {
 	_nickname = name;
 }
+void User::set_in_server(bool _in_server)
+{
+	this->_in_server = _in_server;
+}
 
 void User::setFd(int fd)
 {
@@ -67,6 +73,10 @@ void User::setUsername(std::string name)
 int &User::getFd()
 {
 	return (_fd);
+}
+bool &User::get_check_in_server()
+{
+	return (_in_server);
 }
 void User::incre_nc_check(void)
 {
