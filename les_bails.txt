@@ -22,6 +22,7 @@ Class User
 	etc...
 }
 
+
 Class channel
 {
 	name
