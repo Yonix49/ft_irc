@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/27 20:15:06 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/29 17:08:54 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 #include "../channel/channel.hpp"
 // # include "../user/user.hpp"
 #include <map>
+#include <functional>
+#include <string>
+
 struct ServerSocket
 {
 	struct sockaddr_in serverAddress;
@@ -25,13 +28,19 @@ struct ServerSocket
 	int serverSocket;
 	int epollFd; // Crée un descripteur de fichier epoll
 };
-typedef void (*CommandFunction)(const std::string &, int);
+
+typedef void (*CommandFunction)(std::string, int);
 
 class Server
 {
 public:
 	// Constructeur
-	Server();
+	static Server &getInstance()
+	{
+		static Server instance;
+		return instance;
+	}
+
 	~Server();
 	Server(int port, const std::string &password);
 	Server(const Server &src);
@@ -58,12 +67,11 @@ public:
 	std::vector<std::string> get_vector_ref(std::string str);
 	int irsii_argument_check(std::vector<std::string> words, int fd, User *user);
 	int check_user_irsi(int fd, User *user, std::vector<std::string> words);
-	static void HandleNickCommand(const std::string &param, int fd);
 
 	// containers map
 	void addCommand(const std::string &command, CommandFunction function);
 	void initializeCommandMap();
-	int use_map_function(char buffer[1024], int fd);
+	int use_map_function(std::string buffer, int fd);
 
 	std::string get_password(void);
 	void setPassword(std::string password);
@@ -73,13 +81,22 @@ public:
 	int check_user_nc(int fd, User *user, std::vector<std::string> words);
 	int ft_lauch_commmand(int fd, std::string str);
 	bool is_connected(int fd);
+
+	static void HandleNickCommand(std::string param, int fd);
+
 private:
+	Server()
+	{
+		_checking_nc = 0;
+	}
 	int _port;
 	ServerSocket _serv;
 	std::string _password;
 	std::vector<User> _users;
 	std::vector<Channel> _channels;
 	int _checking_nc;
+	User *user;
+	std::map<std::string, CommandFunction> commandMap;
 
 	// std::map<std::string, CommandFunction> commandMap;
 };

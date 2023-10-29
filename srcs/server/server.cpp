@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/27 20:26:50 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/29 17:07:23 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ Server::~Server()
 	_serv.serverSocket = 0;
 }
 // Constructeur
-Server::Server()
-{
-	_checking_nc = 0;
-}
+// Server::Server()
+// {
+// 	_checking_nc = 0;
+// }
 Server::Server(int port, const std::string &password)
 {
 	_port = port;
@@ -62,7 +62,7 @@ void Server::setPassword(std::string password)
 {
 	_password = password;
 }
-static std::map<std::string, CommandFunction> commandMap;
+
 //---------------------GETTEUR---------------------------///////
 
 User *Server::getUserNo(int fd)
@@ -81,10 +81,7 @@ std::vector<std::string> Server::get_vector_ref(std::string str)
 
 	std::string word;
 	while (iss >> word)
-	{
 		words.push_back(word);
-		std::cout << "je suis ici " << word << std::endl;
-	}
 	return (words);
 }
 std::string Server::get_password(void)
@@ -154,31 +151,7 @@ int Server::createServerSocket()
 	close(_serv.clientSocket);
 	return (_serv.serverSocket);
 }
-int Server::use_map_function(char buffer[1024], int fd)
-{
-	(void)(fd);
-	for (std::map<std::string, CommandFunction>::const_iterator it = commandMap.begin(); it != commandMap.end(); ++it)
-	{
-		std::cout << "it->first " << it->first << "buffer " << buffer << std::endl;
-		std::cout << "strcmp " << strncmp(it->first.c_str(), buffer, strlen(buffer)) << std::endl;
-		if (strncmp(it->first.c_str(), buffer, strlen(buffer)) == -10) // A changer cest bizzare
-		{
-			// Vous avez trouvé la commande correspondante
-			CommandFunction commandFunction = it->second;
-			// Maintenant, vous pouvez appeler la fonction associée à la commande
-			commandFunction("paramètre de la commande", 123); // Appelez la commande avec les paramètres appropriés
-			break;											  // Sortez de la boucle une fois que la commande a été trouvée et exécutée
-		}
-	}
-	return (0);
-}
-bool Server::is_connected(int fd)
-{
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
 
-	return (user->get_check_in_server());
-}
 int Server::recieve_data(int fd, int isNewUser)
 {
 	(void)isNewUser;
@@ -204,259 +177,58 @@ int Server::recieve_data(int fd, int isNewUser)
 		buffer[bytesRead] = '\0';
 		std::string str(buffer); // Convertir le buffer en std::string
 
-		if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
-		{
-			if (str.length() >= 2)
-			{
-				std::string lastTwoChars = str.substr(str.length() - 2, 2);
-				if (lastTwoChars == "\r\n")
-				{
-					irssi_check(buffer, fd);
-					std::cout << "Je suis dans le cas IRSSI " << std::endl;
-				}
-				else
-				{
-					nc_check(buffer, fd);
-					std::cout << "Je suis dans le cas nc " << buffer << std::endl;
-				}
-			}
-		}
-		else
-			use_map_function(buffer, fd); // ici on peux appeler n'importe quelle fonction dcp
-										  // if (buffer && buffer([strlen(buffer) - 1] == '\n') && buffer([strlen(buffer) - 2] == '\r'))
-										  // 	std::cout << buffer << std::endl;
-										  // for (int i = 0; buffer[i]; i++)
-										  // std::cout << "char c =" << buffer[i] << std::endl;
-										  // }
-										  // if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
-										  // {
-										  // 	std::cout << "ici check connection" << std::endl;
-										  // 	return (-1);
-										  // 	//     // temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
-										  // 	//     // check_connection
-										  // 	//     bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
-										  // 	//     return (-1);
-										  // }
-										  // 	std::cout << "nickname = " << _users.back().getNickname() << std::endl;
-										  // 	std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
-										  // 	size_t messageLength = welcomeMessage.length();
-										  // 	if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-										  // 		std::cout << "error envoie RPL" << std::endl;
-										  // }
-										  // else
-										  // 	launchCmd(buffer, fd);
+		// if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
+		// {
+		// 	if (str.length() >= 2)
+		// 	{
+		// 		std::string lastTwoChars = str.substr(str.length() - 2, 2);
+		// 		if (lastTwoChars == "\r\n")
+		// 		{
+		// 			irssi_check(buffer, fd);
+		// 			std::cout << "Je suis dans le cas IRSSI " << std::endl;
+		// 		}
+		// 		else
+		// 		{
+		// 			nc_check(buffer, fd);
+		// 			std::cout << "Je suis dans le cas nc " << buffer << std::endl;
+		// 		}
+		// 	}
+		// }
+		// else
+			use_map_function(str, fd);
+		// ici on peux appeler n'importe quelle fonction dcp
+		// if (buffer && buffer([strlen(buffer) - 1] == '\n') && buffer([strlen(buffer) - 2] == '\r'))
+		// 	std::cout << buffer << std::endl;
+		// for (int i = 0; buffer[i]; i++)
+		// std::cout << "char c =" << buffer[i] << std::endl;
+		// }
+		// if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
+		// {
+		// 	std::cout << "ici check connection" << std::endl;
+		// 	return (-1);
+		// 	//     // temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
+		// 	//     // check_connection
+		// 	//     bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
+		// 	//     return (-1);
+		// }
+		// 	std::cout << "nickname = " << _users.back().getNickname() << std::endl;
+		// 	std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+		// 	size_t messageLength = welcomeMessage.length();
+		// 	if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+		// 		std::cout << "error envoie RPL" << std::endl;
+		// }
+		// else
+		// 	launchCmd(buffer, fd);
 	}
 	return (0);
 }
 
-int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *user)
-{
-	if (!words.empty() && words.size() >= 11)
-	{
-		if (words[2] == "PASS")
-		{
-			std::cout << "je verif le mot de passe" << std::endl;
-			if (words[3] == _password.c_str())
-			{
-				std::cout << "good mdp" << std::endl;
-				user->incre_nc_check();
-			}
-			else
-			{
-				std::cout << "wrong mdp" << std::endl;
-				return (1);
-				/// ERR_PASSWDMISMATCH
-			}
-		}
-		else
-		{
-			/// ERR_PASSWDMISMATCH
-			return (1);
-		}
-		//
-		if (words[4] == "NICK")
-		{
-			std::cout << "je suis ici check nick" << std::endl;
-			if (check_nick(words[5], fd, user) != 0)
-			{
-				std::cerr << "Mauvais nickname" << std::endl;
-				return (1);
-				// ERR_NONICKNAMEGIVEN
-			}
-			else
-			{
-				user->incre_nc_check();
-				user->setNickname(words[5]);
-				std::cout << "good NICK " << words[5] << std::endl;
-			}
-		}
-		else
-		{
-			// ERR_NONICKNAMEGIVEN
-			return (1);
-		}
-		std::cout << "good argument check irsii" << std::endl;
-		return (0);
-	}
-	return (1);
-	// Error Not enough arg
-}
 int Server::ft_lauch_commmand(int fd, const std::string command)
 {
 	(void)(fd);
 	(void)(command);
 	return (0);
 	// Analysez la commande pour extraire la commande et les paramètres
-}
-void Server::addCommand(const std::string &command, CommandFunction function)
-{
-	commandMap[command] = function;
-}
-
-void Server::initializeCommandMap()
-{
-	commandMap["NICK"] = &Server::HandleNickCommand;
-}
-
-// Ajoutez d'autres commandes ici
-void Server::HandleNickCommand(const std::string &param, int fd)
-{
-	std::cout << "Hello world" << std::endl;
-	(void)(param);
-	(void)(fd);
-}
-
-// ...
-
-int Server::irssi_check(std::string str, int fd)
-{
-	std::vector<std::string> words = get_vector_ref(str);
-	std::cout << "je suis ici irsii check connection " << std::endl;
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
-	if (!user)
-		return (1);
-	if (irsii_argument_check(words, fd, user) != 0)
-		return (1);
-
-	user->set_in_server(true);
-	return (0);
-}
-int Server::nc_check(std::string str, int fd)
-{
-	std::vector<std::string> words = get_vector_ref(str);
-	std::cout << "je suis ici nc_check " << std::endl;
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
-	if (!user)
-		return (1);
-
-	if (user && user->get_nc_check() <= 2)
-	{
-		if (!words.empty() && words.size() > 0)
-		{
-			std::cout << "password " << _password << std::endl;
-			if (words[0] == "PASS" && user->get_nc_check() == 0)
-			{
-				if (words.size() == 2 && words[1] == _password.c_str())
-				{
-					std::cout << "good password" << std::endl;
-					user->incre_nc_check();
-				}
-				else
-				{
-					// ERR_PASSWDMISMATCH
-				}
-			}
-			else if (words[0] == "NICK" && user->get_nc_check() == 1)
-			{
-				std::cout << "je suis entrer dans NICK" << std::endl;
-				if (words.size() == 2)
-				{
-					if (check_nick(words[1], fd, user) != 0)
-					{
-						std::cerr << "Mauvais nickname" << std::endl;
-						// ERR_NONICKNAMEGIVEN
-					}
-					else
-					{
-						user->incre_nc_check();
-						user->setNickname(words[1]);
-						std::cout << "good NICK " << words[1] << std::endl;
-					}
-					// }
-					// develop la logique ici
-				}
-			}
-			else if (words[0] == "USER" && user->get_nc_check() == 2)
-			{ // develop la logique ici
-
-				std::cout << "je suis entrer dans USER" << std::endl;
-				if (check_user_nc(fd, user, words) != 0)
-				{
-					std::cerr << "Erreur commande USER" << std::endl;
-				}
-				else
-				{
-					user->incre_nc_check();
-				}
-				// Je dois check le bon USER ici
-			}
-		}
-	}
-	std::cout << "nc == " << user->get_nc_check() << std::endl;
-	if (user->get_nc_check() == 3)
-		user->set_in_server(true);
-	return 0;
-}
-int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
-{
-
-	if (words.size() == 5)
-	{
-		std::cout << "je suis la" << std::endl;
-		// std::cout << "le username rentrer avant op == " << words[1] << std::endl;
-		if (words[1].empty() || words[1].length() <= 1)
-		{
-			std::cout << "je suis la 2" << words[1] << std::endl;
-			return (1);
-			// Le serveur rejette avec rep ERR_NEEDMOREPARAMS
-		}
-		if (words[1].length() > 10) // Username // USERLEN=10
-		{
-			words[1] = words[1].substr(0, 10);
-			user->setUsername(words[1]);
-			std::cout << words[1] << " length == " << words[1].length() << std::endl;
-		}
-		else if (words[2] != "0" && words[3] != "*")
-		{
-			std::cout << "je suis la 3" << std::endl;
-
-			std::cout << "mauvais parametres" << std::endl;
-			return (1);
-		}
-		else if (!words[4].empty())
-		{
-			if (words[4].find(' ') != std::string::npos)
-			{
-				words[4] = ":" + words[4];
-			}
-			// "kgezgin 0 * :kenan GEZGIN"
-			user->setRealname(words[4]);
-			std::cout << "real name " << words[4] << std::endl;
-		}
-	}
-	else
-	{
-		std::cout << "je suis la 4" << std::endl;
-		std::cout << "Usage of USER Parameters: <username> 0 * <realname>" << std::endl;
-		// ERR_NEEDMOREPARAMS
-		return (1);
-	}
-	// si le gars a deja utiliser USER au debut lors de nc msg derror si il ressaie de l'utiliser ERR_ALREADYREGISTERED
-	(void)(user);
-	(void)(fd);
-	return (0);
 }
 
 int Server::check_nick(std::string nickname, int fd, User *user)
