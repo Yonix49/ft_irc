@@ -14,6 +14,31 @@
 7 - quitter le programme propement
 
 
+irssi renvoie toujours /r/n a la fin des commandes
+pour netcat il faut toujours check dans l'ordre en premier le PASS puis le NICK puis le USER
+
+
+
+---------GERER LA CONNECTION-----------
+1- accept les clients
+2- tant que PASS n'est pas valide ne pas check NICK
+3- des que PASS est valide, check NICK
+4- des que NICK est valide, check USER
+5- des que les 3 sont valides, envoyer le RPL_WELCOME
+
+il faut attendre du client les commandes PASS puis NICK puis USER,
+irssi peut les envoyer tous d'un coup, tandis que nc va envoyer un par un.
+nc peut envoyer de bonnes commandes mais de le mauvais ordre, il faut faire attention a ca
+nc ne fait aucun parsing avant d'envoyer une commande
+
+Donc il faut coder les commandes PASS NICK et USER en lisant la doc,
+et les appeler des que la commande est recue depuis le client.
+
+Une fois que les trois variables sont bien set, on peut faire un RPL_WELCOME et executer les commandes du serveur.
+
+
+
+
 Class User
 {
 	username

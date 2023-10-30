@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/25 18:18:06 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/30 17:26:23 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,29 @@ User	*Server::getUserNo(int fd)
 	return (NULL);
 }
 
+User	*Server::getUserString(std::string nickname)
+{
+	for (std::vector<User>::iterator it = _users.begin() ; it != _users.end() ; ++it)
+	{
+		if (!it->getNickname().compare(nickname))
+			return &(*it);
+	}
+	return (NULL);
+}
+
+
+int	findUser(std::string str, std::vector<User> users)
+{
+	int	i = 0;
+	for (std::vector<User>::iterator it = users.begin(); it != users.end(); ++it)
+	{
+		if (!str.compare((*it).getNickname()))
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
 
 int Server::createServerSocket()
 {
@@ -121,7 +144,10 @@ int Server::createServerSocket()
 			}
 			else
 			{
-				recieve_data(fd, 0);
+				struct	epoll_event zero;
+				zero.events = 0;
+				zero.data.fd = -1;
+				recieve_data(fd, 0, zero);
 				isNewUser = 0;
 			}
 		}
@@ -131,7 +157,7 @@ int Server::createServerSocket()
 }
 
 
-int	Server::recieve_data(int fd, int isNewUser)
+int	Server::recieve_data(int fd, int isNewUser, struct	epoll_event clientEvent)
 {
 	(void)isNewUser;
 	int		bytesRead;
@@ -147,6 +173,11 @@ int	Server::recieve_data(int fd, int isNewUser)
 		bytesSent2 = send(fd, "Deconnection reçu par le serveur.\n", 34, 0);
 		if (bytesSent2 < 0)
 			std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
+		if (epoll_ctl(_serv.epollFd, EPOLL_CTL_DEL, fd, &clientEvent) == -1)
+		{
+			std::cerr << "Erreur lors de la suppression du socket client à epoll." << std::endl;
+			return 1;
+		}
 		std::cout << "User disconnected" << std::endl;
 		// Code pour retirer le socket client de votre liste de sockets et d'_serv.epollFd si nécessaire.
 		close(fd);
@@ -154,7 +185,7 @@ int	Server::recieve_data(int fd, int isNewUser)
 	else
 	{
 		buffer[bytesRead] = '\0';
-		std::cout << "Message du client sur le socket " << fd << ": " << buffer << std::endl;
+		std::cout << fd << ": " << buffer << std::endl;
 		if (isNewUser)
 		{
 			if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
@@ -197,16 +228,7 @@ int	Server::newUser(int fd, char buffer[1024])
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	recieve_data(fd, 1);
-
-	// std::string kenan("kenan");
-	// std::string welcomeMessage = RPL_WELCOME(kenan);
-	// size_t messageLength = welcomeMessage.length();
-	// if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-		// std::cout << "error envoie RPL" << std::endl;
-	// bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
-	// if (bytesSent < 0)
-		// std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
+	recieve_data(fd, 1, clientEvent);
 	std::cout << "User connected" << std::endl;
 	return 0;
 }
@@ -244,11 +266,25 @@ int	Server::launchCmd(char buffer[1024], int fd)
 	std::vector<std::string> cmdLine;
 
 	cmdLine = get_cmdLine(buffer);
-	if (!cmdLine[0].compare("/JOIN") || !cmdLine[0].compare("/join"))
+	if (cmdLine.empty() == true)
+	{
+		std::cout << "EMPTY LINE DETECTED" << std::endl;	
+		return (-1);	// command line empty
+	}
+	if (!cmdLine[0].compare("JOIN") || !cmdLine[0].compare("join"))
 		join(cmdLine, fd);
+	if (!cmdLine[0].compare("MODE") || !cmdLine[0].compare("mode"))
+		mode(cmdLine, fd);
+	if (!cmdLine[0].compare("INVITE") || !cmdLine[0].compare("invite"))
+		invite(cmdLine, fd);
+	// KICK
+	// PART
+	// QUIT
+	// PRIVMSG
+	// CHANMSG
+	// NOTICE
 	return (0);
 }
-
 
 
 std::vector<std::string>	Server::get_cmdLine(char buffer[1024])
@@ -290,7 +326,7 @@ int	Server::launchSocket()
 		return 1;
 	}
 	_serv.clientAddrLen = sizeof(_serv.clientAddress);
-	if (listen(_serv.serverSocket, 10) == -1) // gerer ici le nombre de connection max a attendre
+	if (listen(_serv.serverSocket, 50) == -1) // gerer ici le nombre de connection max a attendre
 	{
 		std::cerr << "Erreur lors de la mise en écoute de la socket." << std::endl;
 		return 1;
@@ -298,4 +334,3 @@ int	Server::launchSocket()
 	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
 	return (0);
 }
-

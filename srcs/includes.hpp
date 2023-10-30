@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/25 11:41:19 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/30 16:37:50 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@
 
 extern int			g_signal;
 
-void	signal_ctrl_c(int signo);
+void				signal_ctrl_c(int signo);
+std::string			getChannelName(std::string cmdLine);
+void				sendOneRPL(std::string rpl, int fd);
 
 
 
@@ -77,6 +79,10 @@ void	signal_ctrl_c(int signo);
 # define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
 // 501
 # define ERR_UMODEUNKNOWNFLAG(nickname) (":localhost 501 " + nickname + " :Unknown MODE flag\r\n") 
+// 696
+# define ERR_INVALIDMODEPARAM(nickname, target, mode_char, parameter) (nickname + " " + target + " " + mode_char + " " + parameter + " :Password must not contain any space\r\n")
+// 475
+# define ERR_BADCHANNELKEY(nickname, channel) (nickname + " " + channel + " :Cannot join channel (+k)\r\n")
 
             /* = = =    PASS    = = = */
 // 464
@@ -135,6 +141,7 @@ void	signal_ctrl_c(int signo);
 // 353
 # define RPL_NAMREPLY(nickname, chanel, list_client) (":localhost 353 " + nickname + " = " + chanel + " :" + list_client +"\r\n")
 // 366
+
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
 // 403
 # define ERR_NOSUCHCHANNEL(nickname, chanel) (":localhost 403 " + nickname + " " + chanel + " :No such channel\r\n")
@@ -154,6 +161,12 @@ void	signal_ctrl_c(int signo);
 # define NOCTICE_CLIENT_INVITE(nickname, chanel) (nickname + " invites you to " + chanel + "\r\n")
 // 473
 # define ERR_INVITEONLYCHAN(nickname, chanel) (":localhost 473 " +  nickname + " " + chanel + " :Cannot join channel (+i)\r\n")
+// 443
+# define ERR_USERONCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :is already on channel")
+// 341
+# define RPL_INVITING(nickname, target, channel) (":localhost 341 " + nickname + " " + target + " :" + channel + "\r\n") // used
+
+# define NOCTICE_CLIENT_INVITE(nickname, chanel) (nickname + " invites you to " + chanel + "\r\n") // used
 
             /* = = =    KICK     = = = */
 #define KICK_CLIENT(nickname, username, cmd, chanel, concerned_client_nickname) ((user_id(nickname, username, cmd)) + chanel + " " + concerned_client_nickname + " :\r\n")
@@ -169,6 +182,8 @@ void	signal_ctrl_c(int signo);
 #define RPL_TOPIC(nickname, chanel, topic) (":localhost 332 " + nickname + " " + chanel + " " + topic + "\r\n")
 // 333
 #define ROL_TOPICWHOTIME(nickname, chanel, concerned_client_nickname, time ) (":localhost 333 " + nickname +  + " " + chanel + " " concerned_client_nickname + " " + time + "\r\n")
+// 471
+#define ERR_CHANNELISFULL(nickname, chanel) (nickname + " " + chanel + ":Cannot join channel (+l)\r\n")
 
 #endif
 
