@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/29 17:07:23 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/30 18:25:25 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ void Server::setPassword(std::string password)
 {
 	_password = password;
 }
-
 //---------------------GETTEUR---------------------------///////
 
 User *Server::getUserNo(int fd)
@@ -152,6 +151,26 @@ int Server::createServerSocket()
 	return (_serv.serverSocket);
 }
 
+void sendOneRPL(std::string rpl, int fd)
+{
+	if (send(fd, rpl.c_str(), rpl.size(), 0) == -1)
+		std::cerr << "Error while sending RPL" << std::endl;
+}
+void Server::set_Error_user(std::string error, int fd)
+{
+	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	user = getUserNo(fd);
+	user->setError(error);
+}
+
+std::string Server::get_Error_user(int fd)
+{
+	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	user = getUserNo(fd);
+	if (!user)
+		return(NULL);
+	return (user->Get_Error());
+}
 int Server::recieve_data(int fd, int isNewUser)
 {
 	(void)isNewUser;
@@ -172,64 +191,44 @@ int Server::recieve_data(int fd, int isNewUser)
 		// Code pour retirer le socket client de votre liste de sockets et d'_serv.epollFd si nécessaire.
 		close(fd);
 	}
+	buffer[bytesRead] = '\0';
+	std::string str(buffer); // Convertir le buffer en std::string
+	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
+	{
+		if (str.length() >= 2 && is_connected(fd) == false)
+		{
+			std::string lastTwoChars = str.substr(str.length() - 2, 2);
+			if (is_connected(fd) == false && lastTwoChars == "\r\n")
+			{
+				irssi_check(buffer, fd);
+				if (is_connected(fd) == true)
+				{
+					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+					size_t messageLength = welcomeMessage.length();
+					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+						std::cout << "error envoie RPL" << std::endl;
+				}
+			}
+			else
+			{
+				nc_check(buffer, fd);
+				if (is_connected(fd) == true)
+				{
+					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+					size_t messageLength = welcomeMessage.length();
+					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+						std::cout << "error envoie RPL" << std::endl;
+				}
+			}
+		}
+	}
 	else
 	{
-		buffer[bytesRead] = '\0';
-		std::string str(buffer); // Convertir le buffer en std::string
-
-		// if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
-		// {
-		// 	if (str.length() >= 2)
-		// 	{
-		// 		std::string lastTwoChars = str.substr(str.length() - 2, 2);
-		// 		if (lastTwoChars == "\r\n")
-		// 		{
-		// 			irssi_check(buffer, fd);
-		// 			std::cout << "Je suis dans le cas IRSSI " << std::endl;
-		// 		}
-		// 		else
-		// 		{
-		// 			nc_check(buffer, fd);
-		// 			std::cout << "Je suis dans le cas nc " << buffer << std::endl;
-		// 		}
-		// 	}
-		// }
-		// else
-			use_map_function(str, fd);
-		// ici on peux appeler n'importe quelle fonction dcp
-		// if (buffer && buffer([strlen(buffer) - 1] == '\n') && buffer([strlen(buffer) - 2] == '\r'))
-		// 	std::cout << buffer << std::endl;
-		// for (int i = 0; buffer[i]; i++)
-		// std::cout << "char c =" << buffer[i] << std::endl;
-		// }
-		// if (!checkConnection(fd, buffer)) // check le mdp, recuperer le nickname et toutes les infos necessaires
-		// {
-		// 	std::cout << "ici check connection" << std::endl;
-		// 	return (-1);
-		// 	//     // temporairement on envoie le message suivant mais sinon il faut envoyer le bon rpl dans
-		// 	//     // check_connection
-		// 	//     bytesSent = send(fd, "Connection to server is rejected.\n", 34, 0);
-		// 	//     return (-1);
-		// }
-		// 	std::cout << "nickname = " << _users.back().getNickname() << std::endl;
-		// 	std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
-		// 	size_t messageLength = welcomeMessage.length();
-		// 	if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-		// 		std::cout << "error envoie RPL" << std::endl;
-		// }
-		// else
-		// 	launchCmd(buffer, fd);
+		use_map_function(str, fd);
 	}
 	return (0);
 }
-
-int Server::ft_lauch_commmand(int fd, const std::string command)
-{
-	(void)(fd);
-	(void)(command);
-	return (0);
-	// Analysez la commande pour extraire la commande et les paramètres
-}
+//std::vector<std::string> cmdLine
 
 int Server::check_nick(std::string nickname, int fd, User *user)
 {
@@ -243,7 +242,8 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		nickname.find('!') != std::string::npos)
 	{
 		std::cerr << "Invalid character in nickname" << std::endl;
-		// ERR_ERRONEUSNICKNAME
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return 1;
 	}
 
@@ -251,13 +251,16 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 	if (c == ':' || c == '#' || c == '&')
 	{
 		std::cerr << "Invalid character in nickname" << std::endl;
-		// ERR_ERRONEUSNICKNAME
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
 	}
 	if (nickname.length() > 200)
 	{
 		std::cerr << "Nickname is too long" << std::endl;
-		// ERR_ERRONEUSNICKNAME
+			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
+
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
 	}
 	for (int i = 0; nickname[i]; i++)
@@ -265,8 +268,9 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		if (nickname[i] < 32 || nickname[i] > 126)
 		{
 			std::cerr << "Invalid character in nickname" << std::endl;
-			// ERR_ERRONEUSNICKNAME
-			return 1;
+			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
+			set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+			return (1);
 		}
 	}
 
@@ -275,19 +279,17 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		User &currentUser = *it;
 		to_compare = currentUser.getNickname();
 		gotten_fd = currentUser.getFd();
-		std::cout << "compare" << to_compare << std::endl;
 		if (to_compare == nickname && gotten_fd != fd)
 		{
 			std::cerr << "Same UserName with another user" << to_compare << std::endl;
-			// ERR_NICKNAMEINUSE
+			sendOneRPL(ERR_NICKNAMEINUSE(user->getNickname()), fd); 
 			return (1);
 		}
 		else
 		{
-			std::cout << "nickname get replace by "
-					  << "nickname" << std::endl;
+			std::string set = user->getNickname();
 			user->setNickname(nickname);
-			std::cout << user->getNickname() << std::endl;
+			std::cout <<  set << " changed his nickname to " << user->getNickname() << std::endl;
 		}
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/29 17:08:54 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/30 18:11:52 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <map>
 #include <functional>
 #include <string>
+#include <exception>
+#include <stdexcept> // Pour les exceptions standard (ceci peut dépendre de votre utilisation)
 
 struct ServerSocket
 {
@@ -30,6 +32,7 @@ struct ServerSocket
 };
 
 typedef void (*CommandFunction)(std::string, int);
+void sendOneRPL(std::string rpl, int fd);
 
 class Server
 {
@@ -72,6 +75,10 @@ public:
 	void addCommand(const std::string &command, CommandFunction function);
 	void initializeCommandMap();
 	int use_map_function(std::string buffer, int fd);
+	static void HandleNickCommand(std::string param, int fd);
+	static void HandleUserCommand(std::string param, int fd);
+	static void HandlePassCommand(std::string param, int fd);
+	void Set_error_message(void);
 
 	std::string get_password(void);
 	void setPassword(std::string password);
@@ -81,14 +88,27 @@ public:
 	int check_user_nc(int fd, User *user, std::vector<std::string> words);
 	int ft_lauch_commmand(int fd, std::string str);
 	bool is_connected(int fd);
+	void set_Error_user(std::string error, int fd);
+	std::string get_Error_user(int fd);
 
-	static void HandleNickCommand(std::string param, int fd);
+	class Error_rpl : public std::exception
+	{
+	public:
+		virtual const char *what() const throw()
+		{
+			return ("Error");
+			// return errorMessage.c_str();
+		}
+
+	private:
+	};
 
 private:
 	Server()
 	{
 		_checking_nc = 0;
 	}
+
 	int _port;
 	ServerSocket _serv;
 	std::string _password;
@@ -96,8 +116,9 @@ private:
 	std::vector<Channel> _channels;
 	int _checking_nc;
 	User *user;
+	std::string _error;
 	std::map<std::string, CommandFunction> commandMap;
-
+	std::map<int, std::string> errorMessages;
 	// std::map<std::string, CommandFunction> commandMap;
 };
 
