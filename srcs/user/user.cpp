@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/27 20:12:37 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/30 15:29:56 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ User::User()
 
 User::User(std::string name) : _nickname(name)
 {
+	_in_server = false;
 }
 
 User::~User()
@@ -34,8 +35,8 @@ User::User(const User &src)
 	_fd = src._fd;
 	_isOperator = src._isOperator;
 	_check_nc = 0;
+	_in_server = false;
 }
-
 // Opérateur d'assignation
 User &User::operator=(const User &src)
 {
@@ -47,7 +48,14 @@ User &User::operator=(const User &src)
 	}
 	return *this;
 }
-
+void User::setError(std::string error)
+{
+	this->_error = error;
+}
+std::string &User::Get_Error(void)
+{
+	return (_error);
+}
 void User::setNickname(std::string name)
 {
 	_nickname = name;

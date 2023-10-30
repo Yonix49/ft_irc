@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/29 16:12:09 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/30 18:28:57 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,34 @@
 
 int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *user)
 {
-	if (!words.empty() && words.size() >= 11)
+	if (!words.empty())
 	{
 		if (words[2] == "PASS")
 		{
-			std::cout << "je verif le mot de passe" << std::endl;
 			if (words[3] == _password.c_str())
 			{
-				std::cout << "good mdp" << std::endl;
 				user->incre_nc_check();
 			}
 			else
 			{
-				std::cout << "wrong mdp" << std::endl;
+				set_Error_user("ERR_PASSWDMISMATCH", fd);
+				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
-				/// ERR_PASSWDMISMATCH
 			}
 		}
 		else
 		{
-			/// ERR_PASSWDMISMATCH
+			set_Error_user("ERR_PASSWDMISMATCH", fd);
+			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 			return (1);
 		}
 		//
 		if (words[4] == "NICK")
 		{
-			std::cout << "je suis ici check nick" << std::endl;
 			if (check_nick(words[5], fd, user) != 0)
 			{
-				std::cerr << "Mauvais nickname" << std::endl;
+				set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 				return (1);
-				// ERR_NONICKNAMEGIVEN
 			}
 			else
 			{
@@ -55,25 +52,31 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 		}
 		else
 		{
-			// ERR_NONICKNAMEGIVEN
+			sendOneRPL(ERR_NONICKNAMEGIVEN(user->getNickname()), fd);
+			set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 			return (1);
 		}
-		std::cout << "good argument check irsii" << std::endl;
-		return (0);
 	}
-	return (1);
-	// Error Not enough arg
+	return (0);
 }
+
 int Server::irssi_check(std::string str, int fd)
 {
 	std::vector<std::string> words = get_vector_ref(str);
-	std::cout << "je suis ici irsii check connection " << std::endl;
 	User *user = NULL; // Déclarer un pointeur vers un utilisateur
 	user = getUserNo(fd);
-	if (!user)
+	try
+	{
+		if (irsii_argument_check(words, fd, user) != 0)
+		{
+			throw Error_rpl();
+		}
+	}
+	catch (const Error_rpl &ex)
+	{
+		std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
 		return (1);
-	if (irsii_argument_check(words, fd, user) != 0)
-		return (1);
+	}
 
 	user->set_in_server(true);
 	return (0);

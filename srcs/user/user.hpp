@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/27 20:12:27 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/30 15:29:51 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ public:
 	std::string &getNickname();
 	int &get_nc_check(void);
 	bool &get_check_in_server();
+	std::string &Get_Error();
 
 	void set_in_server(bool _in_server);
 	void setNickname(std::string name);
@@ -37,6 +38,7 @@ public:
 	void setIsOperator(int isOperator);
 	void sendMessage(char buffer[1024]);
 	void incre_nc_check(void);
+	void setError(std::string error);
 
 private:
 	std::string _nickname;
@@ -46,4 +48,5 @@ private:
 	int _isOperator;
 	int _check_nc;
 	bool _in_server;
+	std::string _error;
 };
