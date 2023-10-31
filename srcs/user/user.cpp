@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 18:47:11 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 21:58:51 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ User::User()
 	_isFounder = 0;
 	_check_nc = 0;
 	_in_server = false;
+	_nickname = "";
 
 }
 
@@ -38,14 +39,18 @@ User::User(const User &src)
 	_fd = src._fd;
 	_isOperator = src._isOperator;
 	_check_nc = 0;
-	_in_server = false;
+	_in_server = src._in_server;
 }
 // Opérateur d'assignation
 User &User::operator=(const User &src)
 {
 	if (this != &src)
 	{
+		_nickname = src._nickname;
 		_fd = src._fd;
+		_isOperator = src._isOperator;
+		_check_nc = 0;
+		_in_server = src._in_server;
 	}
 	return *this;
 }

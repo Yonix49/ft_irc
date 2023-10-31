@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 18:58:01 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 22:22:12 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,18 @@
 int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *user)
 {
 	
-	std::cout << user->get_check_in_server() << "  APRES =========================================" << std::endl;
 	if (!words.empty())
 	{
 		if (words[2] == "PASS")
 		{
+			
 			if (words[3] == _password.c_str())
 			{
 				user->incre_nc_check();
 			}
 			else
 			{
+				std::cout <<  "111 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 				set_Error_user("ERR_PASSWDMISMATCH", fd);
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
@@ -33,7 +34,9 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 		}
 		else
 		{
+			std::cout <<  "222 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 			set_Error_user("ERR_PASSWDMISMATCH", fd);
+			
 			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 			return (1);
 		}

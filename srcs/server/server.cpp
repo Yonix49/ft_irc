@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 19:00:04 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 22:25:05 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,8 +312,8 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		gotten_fd = currentUser.getFd();
 		if (to_compare == nickname && gotten_fd != fd)
 		{
-			std::cerr << "Same UserName with another user" << to_compare << std::endl;
-			sendOneRPL(ERR_NICKNAMEINUSE(user->getNickname()), fd);
+			std::cout << "NICKNAME ===== " << nickname << "||| tocompare == " << to_compare << "fd === " << fd << std::endl;
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd);//Cette ligne me rend zinzin
 			return (1);
 		}
 		else
