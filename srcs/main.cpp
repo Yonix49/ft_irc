@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/24 13:04:39 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/29 17:10:05 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int		g_signal = 0;
 
 int main(int argc, char **argv)
 {
-	Server	serv;
+	// Server	serv;
+	Server &server = Server::getInstance();
 	if (argc != 3)
 	{
 		std::cerr << "Usage: <port> <password>" << std::endl;
@@ -31,7 +32,7 @@ int main(int argc, char **argv)
 	}
 	char *end_ptr;
 	long int port = strtol(argv[1], &end_ptr, 10);
-	serv.setPort(port);
+	server.setPort(port);
 	std::cout << port << std::endl;
 	if (*end_ptr != '\0')
 		return(std::cerr << "Error: Invalid port  " << *end_ptr << std::endl, 4);
@@ -39,9 +40,9 @@ int main(int argc, char **argv)
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Invalid caracter found" << std::endl, 2);
 	else if ((port < 0 || port > 65535))
 		return (std::cerr << "Error: Invalid port \"" << argv[1] << "\": " << "Port must be between 0 and 65535" << std::endl, 2);
-	std::string password = std::string(argv[2]);
-	
-	serv.createServerSocket();
+	server.setPassword(std::string(argv[2]));
+	server.createServerSocket();
+	// serv.initializeCommandMap();
 	// std::cout << password << std::endl; 
 
 	
