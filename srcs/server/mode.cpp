@@ -6,17 +6,18 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 12:57:14 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 17:26:12 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-int		Server::mode(std::vector<std::string> cmdLine, int fd)
+void	Server::mode(std::string param, int fd)
 {
-	User *user;
-	
-	user = getUserNo(fd);
+	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	User *user = server.getUserNo(fd);
+	std::vector<std::string> cmdLine = server.get_vector_ref(param);
+
 	int	i = 0;
 
 	// std::cout << "COMMAND MODE IS CALLED" << std::endl;
@@ -27,30 +28,30 @@ int		Server::mode(std::vector<std::string> cmdLine, int fd)
 	if (cmdLine.size() > 4)
 	{
 		std::cout << "RETURN -1" << std::endl;	
-		return (-1); // rien envoyer juste ne pas executer la commande 
+		return ; // rien envoyer juste ne pas executer la commande 
 	}
-	i = channelExist(cmdLine[1]);
+	i = server.channelExist(cmdLine[1]);
 	if (i == -1)
 	{
 		sendOneRPL(ERR_NOSUCHCHANNEL((*user).getNickname(), cmdLine[1]), fd);
 		std::cout << "RETURN -2" << std::endl;	
-		return (-2);
+		return ;
 	}
 	if (user->getisOperator() > 0)
 	{
 		if (cmdLine.size() > 2 && !cmdLine[2].compare("+l"))
-			return (mode_l(cmdLine, i));
+			server.mode_l(cmdLine, i);
 		else if (cmdLine.size() > 2 && !cmdLine[2].compare("+k"))
-			return (mode_k(cmdLine, i, fd, user));
+			server.mode_k(cmdLine, i, fd, user);
 		else if (cmdLine.size() == 3 && !cmdLine[2].compare("+i"))
-			return (mode_i(i));
+			server.mode_i(i);
 	}
 	else
-		std::cout << "NOT OPERATOR (MODE): " << _channels[i]->getLimitUsers() << std::endl;
+		std::cout << "NOT OPERATOR (MODE): " << server._channels[i]->getLimitUsers() << std::endl;
 
 	// il reste mode +t, +o a faire et tout les modes dans leurs fonctions proprement
 	// ne pas oublier de faire les modes dans l'autre sens (+l pour set et UNSET)
-	return (0);
+	return ;
 }
 
 

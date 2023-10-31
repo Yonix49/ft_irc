@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/30 18:28:57 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/31 18:58:01 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *user)
 {
+	
+	std::cout << user->get_check_in_server() << "  APRES =========================================" << std::endl;
 	if (!words.empty())
 	{
 		if (words[2] == "PASS")
@@ -78,6 +80,8 @@ int Server::irssi_check(std::string str, int fd)
 		return (1);
 	}
 
+	// std::cout << user->get_check_in_server() << "AVANT =========================================" << std::endl;
 	user->set_in_server(true);
+	// std::cout << user->get_check_in_server() << "APRES =========================================" << std::endl;
 	return (0);
 }

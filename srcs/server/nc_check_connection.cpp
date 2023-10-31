@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/30 18:59:31 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/31 18:31:41 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 int Server::nc_check(std::string str, int fd)
 {
 	std::vector<std::string> words = get_vector_ref(str);
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
+	User *user = getUserNo(fd);
 	if (!user)
 		return (1);
 	// int flag = 0;

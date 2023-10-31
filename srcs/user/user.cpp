@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 15:41:40 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 18:47:11 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,7 @@ User &User::operator=(const User &src)
 {
 	if (this != &src)
 	{
-		_nickname = src._nickname;
 		_fd = src._fd;
-		_isOperator = src._isOperator;
 	}
 	return *this;
 }

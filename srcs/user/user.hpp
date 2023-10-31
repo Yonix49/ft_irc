@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 16:03:56 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 17:00:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@ public:
 	User(std::string nick);
 	User(const User &src);
 	User &operator=(const User &src);
-	public:
-		User();
-		~User();
-		User(std::string nick);
-		User(const User& src);
-		User& 						operator=(const User& src);
 
 	int &getFd();
 	std::string &getNickname();
@@ -52,10 +46,18 @@ public:
 
 	void setError(std::string error);
 
-	private:
-		std::string		_nickname;
-		std::string		_username;
-		int				_fd;
-		int				_isOperator;
 
+
+private:
+	std::vector<std::string>	_isInvited;
+	std::string 				_nickname;
+	std::string 				_username;
+	std::string 				_realname;
+	int							_fd;
+	int							_isOperator;
+	int							_isFounder;
+	int							_check_nc;
+	bool						_in_server;
+	std::string					_error;
 };
+
