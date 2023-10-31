@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/30 18:25:25 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/10/31 13:49:57 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,8 +258,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 	if (nickname.length() > 200)
 	{
 		std::cerr << "Nickname is too long" << std::endl;
-			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
-
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd); 
 		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
 	}
