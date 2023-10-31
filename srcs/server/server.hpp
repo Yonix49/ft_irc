@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/30 16:38:26 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 13:06:55 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,12 @@ class Server
 
 		int						invite(std::vector<std::string> cmdLine, int fd);
 
+		int						topic(std::vector<std::string> cmdLine, int fd);	
+
 		int						mode(std::vector<std::string> cmdLine, int fd);
+		int						mode_l(std::vector<std::string> cmdLine, int i);
+		int						mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user);
+		int						mode_i(int i);
 
 		int 					check_nickname(std::vector<std::string> str);
 		int 					check_password(std::vector<std::string> str);

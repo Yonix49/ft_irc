@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:14 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/30 16:38:37 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 13:29:56 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,24 @@ class Channel
 
 		std::string					&getName(void);
 		std::string					getListUsers(void);
-		std::string					getTopic(void);
-		std::string					getPassword(void);
+		std::string					&getTopic(void);
+		std::string					&getPassword(void);
 		int							getLimitUsers(void);
 		int							getNbUsers(void);
-		bool						getIsInviteOnlyMod(void);
+		bool						getMode_i(void);
+		bool						getMode_t(void);
+		bool						getMode_k(void);
+		bool						getMode_o(void);
+		bool						getMode_l(void);
+		void						setMode_i(bool nb);
+		void						setMode_t(bool nb);
+		void						setMode_k(bool nb);
+		void						setMode_o(bool nb);
+		void						setMode_l(bool nb);
 		void						setTopic(std::string topic);
 		void						setName(std::string name);
 		void						setUsers(std::vector<User> users);
 		void						setNbUsers(int nbUsers);
-		void						setIsInviteOnlyMod(bool nb);
 		void						setIsOperator(std::vector<User> operators);
 		void						setLimitUsers(int limit);
 		void						setPassword(std::string password);
@@ -49,7 +57,11 @@ class Channel
 		void						sendRPLtoChan(std::string rpl);
 
 	private:
-		bool						_isInviteOnlyMod;
+		bool						_mode_i;
+		bool						_mode_t;
+		bool						_mode_k;
+		bool						_mode_o;
+		bool						_mode_l;
 		int							_limitUsers;
 		int							_nbUsers;
 		std::string 				_name;

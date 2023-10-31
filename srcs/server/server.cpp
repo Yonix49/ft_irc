@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/30 17:26:23 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 14:30:45 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,9 @@ int	Server::launchCmd(char buffer[1024], int fd)
 		mode(cmdLine, fd);
 	if (!cmdLine[0].compare("INVITE") || !cmdLine[0].compare("invite"))
 		invite(cmdLine, fd);
+	if (!cmdLine[0].compare("TOPIC") || !cmdLine[0].compare("topic"))
+		topic(cmdLine, fd);
+	// TOPIC
 	// KICK
 	// PART
 	// QUIT

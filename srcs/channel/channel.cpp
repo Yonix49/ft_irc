@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/30 16:39:10 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 14:09:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,24 @@ Channel::Channel()
 {
 	_limitUsers = 0;
 	_nbUsers = 0;
-	_isInviteOnlyMod = false;
+	_mode_i = false;
+	_mode_t = false;
+	_mode_k = false;
+	_mode_o = false;
+	_mode_l = false;
+
 }
 
 Channel::Channel(std::string name) : _name(name)
 {
 	_limitUsers = 0;
 	_nbUsers = 0;
-	_isInviteOnlyMod = false;
+	_mode_i = false;
+	_mode_t = false;
+	_mode_k = false;
+	_mode_o = false;
+	_mode_l = false;
+
 }
 
 
@@ -39,11 +49,15 @@ Channel::Channel(const Channel &src)
 	_users = src._users;
 	_operators = src._operators;
 	_limitUsers = src._limitUsers;
-	_isInviteOnlyMod = src._isInviteOnlyMod;
 	_topic = src._topic;
 	_invited = src._invited;
 	_nbUsers = src._nbUsers;
 	_password = src._password;
+	_mode_i = src._mode_i;
+	_mode_t = src._mode_t;
+	_mode_k = src._mode_k;
+	_mode_o = src._mode_o;
+	_mode_l = src._mode_l;
 }
 
 // Opérateur d'assignation
@@ -55,11 +69,15 @@ Channel &Channel::operator=(const Channel &src)
 		_users = src._users;
 		_operators = src._operators;
 		_limitUsers = src._limitUsers;
-		_isInviteOnlyMod = src._isInviteOnlyMod;
 		_topic = src._topic;
 		_invited = src._invited;
 		_nbUsers = src._nbUsers;
 		_password = src._password;
+		_mode_i = src._mode_i;
+		_mode_t = src._mode_t;
+		_mode_k = src._mode_k;
+		_mode_o = src._mode_o;
+		_mode_l = src._mode_l;
 	}
 	return *this;
 }
@@ -84,12 +102,12 @@ std::string	&Channel::getName(void)
 	return (_name);
 }
 
-std::string	Channel::getTopic(void)
+std::string	&Channel::getTopic(void)
 {
 	return (_topic);
 }
 
-std::string	Channel::getPassword(void)
+std::string	&Channel::getPassword(void)
 {
 	return (_password);
 }
@@ -100,9 +118,29 @@ int	Channel::getLimitUsers(void)
 	return (_limitUsers);
 }
 
-bool	Channel::getIsInviteOnlyMod(void)
+bool	Channel::getMode_i(void)
 {
-	return (_isInviteOnlyMod);
+	return (_mode_i);
+}
+
+bool	Channel::getMode_t(void)
+{
+	return (_mode_t);
+}
+
+bool	Channel::getMode_k(void)
+{
+	return (_mode_k);
+}
+
+bool	Channel::getMode_o(void)
+{
+	return (_mode_o);
+}
+
+bool	Channel::getMode_l(void)
+{
+	return (_mode_l);
 }
 
 int	Channel::getNbUsers(void)
@@ -147,9 +185,31 @@ void	Channel::setNbUsers(int nbUsers)
 	_nbUsers = nbUsers;
 }
 
-void	Channel::setIsInviteOnlyMod(bool nb)
+
+
+void	Channel::setMode_i(bool nb)
 {
-	_isInviteOnlyMod = nb;
+	_mode_i = nb;
+}
+
+void	Channel::setMode_t(bool nb)
+{
+	_mode_t = nb;
+}
+
+void	Channel::setMode_k(bool nb)
+{
+	_mode_k = nb;
+}
+
+void	Channel::setMode_o(bool nb)
+{
+	_mode_o = nb;
+}
+
+void	Channel::setMode_l(bool nb)
+{
+	_mode_l = nb;
 }
 
 void	Channel::addInvitedUser(std::string nickname)
@@ -202,8 +262,10 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
 	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
-	// if (getTopic().empty())
-	// 	sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, getTopic()), fd);
+	if (getTopic().empty() == true)
+		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
+	else
+		sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, getTopic()), fd);
 	sendRPLtoChan(RPL_ENDOFNAMES(user.getNickname(), channelName));
 	return (0);
 }

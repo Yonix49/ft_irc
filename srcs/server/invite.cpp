@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:05:02 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/30 16:05:51 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 11:34:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,15 @@
 
 int	Server::invite(std::vector<std::string> cmdLine, int fd)
 {
+	User * user = getUserNo(fd);
 	if (cmdLine.size() != 3)
 	{
-		// not enough params
+		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), cmdLine[0]), fd);
 		return (-1);
 	}
 
 	int	i = channelExist(cmdLine[2]);
-	User * user = getUserNo(fd);
-	
-	
+
 	// check si le user a inviter existe ou pas, sinon envoyer ERR_nosuchuser
 	if (findUser(cmdLine[1], _users) == -1)
 	{
@@ -47,7 +46,7 @@ int	Server::invite(std::vector<std::string> cmdLine, int fd)
 	}
 	
 	// si le channel est en mode invite only, seul les operateurs peuvent inviter, ERR_CHANOPRIVSNEEDED
-	if (_channels[i]->getIsInviteOnlyMod() == true && _channels[i]->isUserinchan(user->getNickname(), 1) == -1)
+	if (_channels[i]->getMode_i() == true && _channels[i]->isUserinchan(user->getNickname(), 1) == -1)
 	{
 		sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[2]), fd);
 		return (-5);

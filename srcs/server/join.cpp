@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/30 16:26:38 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/10/31 11:34:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	Server::join(std::vector<std::string> cmdLine, int fd)
 			std::cout << "RETURN -4" << std::endl;
 			return (-4);
 		}
-		else if (_channels[i]->getIsInviteOnlyMod() == true && user->getisInvited(channelName) == 0)
+		else if (_channels[i]->getMode_i() == true && user->getisInvited(channelName) == 0)
 		{
 			std::cout << "RETURN -5" << std::endl;
 			sendOneRPL(ERR_INVITEONLYCHAN(user->getNickname(), channelName), fd);
