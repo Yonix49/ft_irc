@@ -14,6 +14,8 @@
 7 - quitter le programme propement
 
 
+
+
 irssi renvoie toujours /r/n a la fin des commandes
 pour netcat il faut toujours check dans l'ordre en premier le PASS puis le NICK puis le USER
 
