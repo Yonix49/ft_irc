@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 22:22:12 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/01 15:23:50 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			else
 			{
 				user->incre_nc_check();
-				user->setNickname(words[5]);
+				// user->setNickname(words[5]);
 				std::cout << "good NICK " << words[5] << std::endl;
 			}
 		}

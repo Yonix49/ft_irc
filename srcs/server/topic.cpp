@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 13:07:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 17:24:18 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/01 16:01:58 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,24 +38,34 @@ void	Server::topic(std::string param, int fd)
 		else
 			sendOneRPL(RPL_TOPIC(user->getNickname(), cmdLine[1], server._channels[i]->getTopic()), fd);
 	}
-	else if (cmdLine.size() == 3 && cmdLine[2].empty() == true && user->getisOperator() > 0)
+	else if (cmdLine.size() == 3 && cmdLine[2].empty() == true)
 	{
+		if (server._channels[i]->getMode_t() == true && user->getisOperator() < 1)
+			return ;
 		// clear le topic
+		std::cout << "remove topic" << std::endl;
 		server._channels[i]->getTopic().clear();
 		server._channels[i]->sendRPLtoChan(RPL_NOTOPIC(user->getNickname(), cmdLine[1]));
 	}
-	else if (user->getisOperator() > 0)
+	else
 	{
 		// set un nouveau topic ou remplacer l'ancien
-
-
-// ne pas oublier de prendre tout le suejt et pas que le premier mot
-
+		// ne pas oublier de prendre tout le topic et pas que le premier mot
+		if (server._channels[i]->getMode_t() == true && user->getisOperator() < 1)
+			return ;
+		
 		if (server._channels[i]->getTopic().empty() == false)
 			server._channels[i]->getTopic().clear();
-		server._channels[i]->setTopic(cmdLine[2]);
+
+		std::string topic;
+		for (size_t i = 2; i < cmdLine.size(); i++)
+		{	
+			topic += cmdLine[i];
+			topic += " ";
+		}
+		
+		server._channels[i]->setTopic(topic);
 		server._channels[i]->sendRPLtoChan(RPL_TOPIC(user->getNickname(), cmdLine[1], server._channels[i]->getTopic()));
-		// std::cout << server._channels[i]->getTopic() << std::endl;
 	}
 	return ;
 }

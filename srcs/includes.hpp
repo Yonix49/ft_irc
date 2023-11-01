@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 21:38:31 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/01 17:16:32 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,8 @@ void				sendOneRPL(std::string rpl, int fd);
 
 # define ERR_WASNOSUCHNICK(nickname, other_nick) (":localhost 406 " + nickname + " " + other_nick + " :There was no such nickname\r\n")
 // 433
-# define ERR_NICKNAMEINUSE(nickname) (":localhost 433 * " + nickname + " :Nickname is already in use\r\n")
 # define ERR_ALREADYREGISTERED(nickname) (":localhost 462 " + nickname + " :You may not reregister\r\n")
+# define ERR_NICKNAMEINUSE(nickname) (":localhost 433 * " + nickname + " :Nickname is already in use\r\n")//used
 
             /* = = =    GENERIC ERR     = = = */
 // 421
@@ -189,6 +189,8 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ROL_TOPICWHOTIME(nickname, chanel, concerned_client_nickname, time ) (":localhost 333 " + nickname +  + " " + chanel + " " concerned_client_nickname + " " + time + "\r\n")
 // 471
 #define ERR_CHANNELISFULL(nickname, chanel) (nickname + " " + chanel + ":Cannot join channel (+l)\r\n")
+
+# define RPL_JOIN(nickname, chanel) (':' + nickname + " JOIN #" + chanel + "\r\n")
 
 #endif
 

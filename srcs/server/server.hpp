@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 18:57:44 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/01 17:35:41 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,57 +49,58 @@ public:
 	Server(const Server &src);
 	// operateur =
 	Server &operator=(const Server &src);
+	static void					Set_error_message(void);
+	void						setPassword(std::string password);
+	void						setPort(long int port);
+	void						set_Error_user(std::string error, int fd);
+	std::string					get_password(void);
+	std::string					get_Error_user(int fd);
+	User						*getUserNo(int fd);
 
-	int createServerSocket();
-	int launchSocket();
-	int recieve_data(int fd, int isNewUser);
-	int checkConnection(int fd, char buffer[1024]);
-	int newUser(int fd, char buffer[1024]);
+	int							createServerSocket();
+	int							launchSocket();
+	int							recieve_data(int fd, int isNewUser);
+	int							checkConnection(int fd, char buffer[1024]);
+	int							newUser(int fd, char buffer[1024]);
 
-	int launchCmd(char buffer[1024], int fd);
-	std::vector<std::string> get_cmdLine(char buffer[1024]);
+	std::vector<std::string>	get_cmdLine(char buffer[1024]);
 
-	int channelExist(std::string channelName);
+	int							channelExist(std::string channelName);
 
+	static void					join(std::string param, int fd);
+	static void					invite(std::string param, int fd);
+	static void					topic(std::string param, int fd);
+	static void					part(std::string param, int fd);
+	static void					mode(std::string param, int fd);
 
+	int							mode_t(std::vector<std::string> cmdLine, int i);
+	int							mode_l(std::vector<std::string> cmdLine, int i);
+	int							mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user);
+	int							mode_i(std::vector<std::string> cmdLine, int i);
 
-	int mode_l(std::vector<std::string> cmdLine, int i);
-	int mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user);
-	int mode_i(int i);
-
-	int check_nickname(std::vector<std::string> str);
-	int check_password(std::vector<std::string> str);
-	int nc_check(std::string str, int fd);
-	int irssi_check(std::string str, int fd);
-	void initialize_command_map();
-	std::vector<std::string> get_vector_ref(std::string str);
-	int irsii_argument_check(std::vector<std::string> words, int fd, User *user);
-	int check_user_irsi(int fd, User *user, std::vector<std::string> words);
-	User *getUserString(std::string nickname);
+	int							check_nickname(std::vector<std::string> str);
+	int							check_password(std::vector<std::string> str);
+	int							nc_check(std::string str, int fd);
+	int							irssi_check(std::string str, int fd);
+	void						initialize_command_map();
+	std::vector<std::string>	get_vector_ref(std::string str);
+	int							irsii_argument_check(std::vector<std::string> words, int fd, User *user);
+	int							check_user_irsi(int fd, User *user, std::vector<std::string> words);
+	User						*getUserString(std::string nickname);
 
 	// containers map
-	void				addCommand(const std::string &command, CommandFunction function);
-	void				initializeCommandMap();
-	int					use_map_function(std::string buffer, int fd);
-	static void			HandleNickCommand(std::string param, int fd);
-	static void			HandleUserCommand(std::string param, int fd);
-	static void			HandlePassCommand(std::string param, int fd);
-	static void			join(std::string param, int fd);
-	static void			invite(std::string param, int fd);
-	static void			mode(std::string param, int fd);
-	static void			topic(std::string param, int fd);
-	static void			Set_error_message(void);
+	void						addCommand(const std::string &command, CommandFunction function);
+	void						initializeCommandMap();
+	int							use_map_function(std::string buffer, int fd);
+	static void					HandleNickCommand(std::string param, int fd);
+	static void					HandleUserCommand(std::string param, int fd);
+	static void					HandlePassCommand(std::string param, int fd);
 
-	std::string get_password(void);
-	void setPassword(std::string password);
-	void setPort(long int port);
-	User *getUserNo(int fd);
-	int check_nick(std::string nickname, int fd, User *user);
-	int check_user_nc(int fd, User *user, std::vector<std::string> words);
-	int ft_lauch_commmand(int fd, std::string str);
-	bool is_connected(int fd);
-	void set_Error_user(std::string error, int fd);
-	std::string get_Error_user(int fd);
+
+	int							check_nick(std::string nickname, int fd, User *user);
+	int							check_user_nc(int fd, User *user, std::vector<std::string> words);
+	int							ft_lauch_commmand(int fd, std::string str);
+	bool						is_connected(int fd);
 
 	class Error_rpl : public std::exception
 	{

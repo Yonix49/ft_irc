@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 22:25:05 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/01 15:22:44 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,9 @@ std::vector<std::string> Server::get_vector_ref(std::string str)
 
 	std::string word;
 	while (iss >> word)
+	{
 		words.push_back(word);
+	}
 	return (words);
 }
 std::string Server::get_password(void)
@@ -217,9 +219,10 @@ int Server::recieve_data(int fd, int isNewUser)
 	}
 	buffer[bytesRead] = '\0';
 	std::string str(buffer);					   // Convertir le buffer en std::string
+	std::cout << fd << ": " << str << std::endl;
 	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
 	{
-
+// 
 		if (str.length() >= 2 && is_connected(fd) == false)
 		{
 			std::string lastTwoChars = str.substr(str.length() - 2, 2);
@@ -254,7 +257,7 @@ int Server::recieve_data(int fd, int isNewUser)
 			}
 		}
 	}
-	else // if (is_connected(fd) == true)
+	else if (is_connected(fd) == true)
 	{
 		use_map_function(str, fd);
 	}
@@ -312,9 +315,16 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		gotten_fd = currentUser.getFd();
 		if (to_compare == nickname && gotten_fd != fd)
 		{
-			std::cout << "NICKNAME ===== " << nickname << "||| tocompare == " << to_compare << "fd === " << fd << std::endl;
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd);//Cette ligne me rend zinzin
-			return (1);
+			std::cout << "NICKNAME ===== " << nickname << " ||| tocompare == " << to_compare << " fd === " << fd << std::endl;
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			char buf[1024];
+			int i = recv(fd, buf, sizeof(buf), 0);
+			buf[i] = '\0';
+			std::string test(buf + 5);
+			std::cout << "NEW NICK RECIEVED = " << test << std::endl;
+			user->setNickname(test);
+			std::cout << " changed his nickname to " << user->getNickname() << std::endl;
+			return (0);
 		}
 		else
 		{
@@ -351,7 +361,7 @@ int Server::newUser(int fd, char buffer[1024])
 	// bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
 	// if (bytesSent < 0)
 	// std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
-	std::cout << "User connected" << std::endl;
+	// std::cout << "User connected" << std::endl;
 	return 0;
 }
 

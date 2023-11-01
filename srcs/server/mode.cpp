@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 17:26:12 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/01 17:46:05 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,21 @@ void	Server::mode(std::string param, int fd)
 		std::cout << "RETURN -2" << std::endl;	
 		return ;
 	}
+	// if (cmdLine.size() == 2)
+	// {
+	// 	std::string modes = server._channels[i]->getModes();
+	// 	sendOneRPL(RPL_CHANNELMODEIS((*user).getNickname(), cmdLine[1], modes), fd);
+	// }
 	if (user->getisOperator() > 0)
 	{
-		if (cmdLine.size() > 2 && !cmdLine[2].compare("+l"))
+		if (cmdLine.size() > 2 && cmdLine[2][1] == 'l')
 			server.mode_l(cmdLine, i);
-		else if (cmdLine.size() > 2 && !cmdLine[2].compare("+k"))
+		else if (cmdLine.size() > 2 && cmdLine[2][1] == 'k')
 			server.mode_k(cmdLine, i, fd, user);
-		else if (cmdLine.size() == 3 && !cmdLine[2].compare("+i"))
-			server.mode_i(i);
+		else if (cmdLine.size() == 3 && cmdLine[2][1] == 'i')
+			server.mode_i(cmdLine, i);
+		else if (cmdLine.size() == 3 && cmdLine[2][1] == 't')
+			server.mode_t(cmdLine, i);
 	}
 	else
 		std::cout << "NOT OPERATOR (MODE): " << server._channels[i]->getLimitUsers() << std::endl;
@@ -55,9 +62,17 @@ void	Server::mode(std::string param, int fd)
 }
 
 
+
+
+// au moins mode i et mode t ne sont pas encore bon avec genre +i et -i
+
+
+
+
+
 int		Server::mode_l(std::vector<std::string> cmdLine, int i)
 {
-	if (_channels[i]->getMode_i() == false && cmdLine.size() == 4)
+	if (_channels[i]->getMode_i() == false && cmdLine.size() == 4 && cmdLine[2][0] == '+')
 	{
 		int	limit = atoi(cmdLine[3].c_str()); 
 		if (limit > 0 && limit < 2147483647)
@@ -65,7 +80,7 @@ int		Server::mode_l(std::vector<std::string> cmdLine, int i)
 		_channels[i]->setMode_l(true);
 		std::cout << "LIMITUSER SET TO: " << _channels[i]->getLimitUsers() << std::endl;
 	}
-	else if (_channels[i]->getMode_l() == true)
+	else if (_channels[i]->getMode_l() == true && cmdLine[2][0] == '-')
 	{	
 		_channels[i]->setLimitUsers(0);
 		_channels[i]->setMode_l(false);
@@ -73,10 +88,18 @@ int		Server::mode_l(std::vector<std::string> cmdLine, int i)
 	return (0);
 }
 
+int		Server::mode_t(std::vector<std::string> cmdLine, int i)
+{
+	if (_channels[i]->getMode_t() == false && cmdLine[2][1] == '+')
+		_channels[i]->setMode_t(true);
+	else if (cmdLine[2][1] == '-')
+		_channels[i]->setMode_t(false);
+	return (0);
+}
 
 int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 {
-	if (_channels[i]->getMode_k() == false && cmdLine.size() == 4)
+	if (_channels[i]->getMode_k() == false && cmdLine.size() == 4 && cmdLine[2][0] == '+')
 	{
 		if (cmdLine[3].find(' ') == std::string::npos)
 		{
@@ -90,7 +113,7 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 			return ( -3);
 		}
 	}
-	else if (_channels[i]->getMode_k() == true)
+	else if (_channels[i]->getMode_k() == true && cmdLine[2][0] == '-')
 	{
 		_channels[i]->getPassword().clear();
 		_channels[i]->setMode_k(false);
@@ -98,11 +121,12 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	return (0);
 }
 
-int		Server::mode_i(int i)
+int		Server::mode_i(std::vector<std::string> cmdLine, int i)
 {
-	if (_channels[i]->getMode_i() == false)
+	std::cout << "passage par le mode" << std::endl;
+	if (_channels[i]->getMode_i() == false && cmdLine[2][1] == '+')
 		_channels[i]->setMode_i(true);
-	else
+	else if (cmdLine[2][1] == '-')
 		_channels[i]->setMode_i(false);
 	return (0);
 }

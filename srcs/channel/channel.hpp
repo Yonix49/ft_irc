@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:14 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 13:29:56 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/01 17:20:45 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ class Channel
 		std::string					&getTopic(void);
 		std::string					&getPassword(void);
 		int							getLimitUsers(void);
+		std::string					getModes();
+		std::string					getModes_2(bool i);
 		int							getNbUsers(void);
 		bool						getMode_i(void);
 		bool						getMode_t(void);

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 14:09:21 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/01 17:24:12 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,24 @@ int	Channel::getNbUsers(void)
 	return (_nbUsers);
 }
 
+std::string		Channel::getModes()
+{
+	std::string res;
+
+	res = "mode_i = " + getModes_2(getMode_i()) + "\n";
+	res += "mode_t = " + getModes_2(getMode_t()) + "\n";
+	res += "mode_k = " + getModes_2(getMode_k()) + "\n";
+	res += "mode_l = " + getModes_2(getMode_l()) + "\n";
+	return (res);
+}
+
+std::string		Channel::getModes_2(bool i)
+{
+	if (i == true)
+		return ("true");
+	return ("false");
+}
+
 
 std::string		Channel::getListUsers(void)
 {
@@ -235,7 +253,7 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 {
 	(void)fd;
 	std::string newnick;
-	std::cout << "ADDUSER IS CALLED" << std::endl;
+	// std::cout << "ADDUSER IS CALLED" << std::endl;
 	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
 	{
 		if (it->getNickname() == user.getNickname())
@@ -261,11 +279,12 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
-	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
+	sendOneRPL(RPL_JOIN(user.getNickname(), channelName), fd);
 	if (getTopic().empty() == true)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
 		sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, getTopic()), fd);
+	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
 	sendRPLtoChan(RPL_ENDOFNAMES(user.getNickname(), channelName));
 	return (0);
 }
