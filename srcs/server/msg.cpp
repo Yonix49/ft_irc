@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 18:26:24 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:43:16 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 		{
 			std::cout << words[1] << "words === " << std::endl;
 			flag++;
-			break ; 
+			break ;
 		}
 	}
 	if (flag == 0 && channel == -1)
@@ -82,6 +82,6 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 	{
 		std::string message = "Channel message from " + user->getNickname();
 		_channels[channel]->sendMSGtoChan(PRIVMSG(user->getNickname(), user->getUsername(), _channels[channel]->getName(), resultat), fd);
-	}	
+	}
 	return (0);
 }
