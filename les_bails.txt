@@ -84,3 +84,25 @@ They MUST NOT contain any of the following characters: space (' ', 0x20), comma 
 They MUST NOT start with any of the following characters: dollar ('$', 0x24), colon (':', 0x3A).
 They MUST NOT start with a character listed as a channel type prefix.
 They SHOULD NOT contain any dot character ('.', 0x2E).
+
+
+
+----------- a faire --------------
+
+- faire /mode sans arguments
+- a chaque modifications de mode envoyer un rpl a tout les users du channel	
+- faire mode -o 																//fait
+- gerer correctement tout les rpl, que ce soit en cas d'erreur ou de succes
+- faire part, kick, messages, (notice, who, whois ?)
+- gerer la deconnection
+- gerer les modes a la creation d'un channel
+
+
+
+pour quit
+
+_channels->invited
+_channels->operator
+_channels->users
+	-> si jamais il y a un channel qui n'a plus de users, alors supprimer le channel (pareil pour part)
+server.users

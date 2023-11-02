@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:14 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/01 17:20:45 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 13:36:35 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Channel
 		int							getLimitUsers(void);
 		std::string					getModes();
 		std::string					getModes_2(bool i);
-		int							getNbUsers(void);
+		int							&getNbUsers(void);
 		bool						getMode_i(void);
 		bool						getMode_t(void);
 		bool						getMode_k(void);
@@ -52,9 +52,12 @@ class Channel
 		void						setPassword(std::string password);
 
 		// void						kickUser(User);
+		int							addUser(User user, int isOperator, std::string channelName, int fd);
+		void						rmUser(User user);
+		void						addOperator(User user);
+		void						rmOperator(User user);
 		void						addInvitedUser(std::string nickname);
 		void						updateInvited(std::string nickname);
-		int							addUser(User user, int isOperator, std::string channelName, int fd);
 		int							isUserinchan(std::string nickname, int type);
 		void						sendRPLtoChan(std::string rpl);
 

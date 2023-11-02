@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/01 17:16:32 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 17:31:20 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void				sendOneRPL(std::string rpl, int fd);
 // # define SET_OTHER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":- " + mode + " " + concerned_client_nickname + "\r\n")
 // # define UNSET_OTER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":+ " + mode + " " + concerned_client_nickname + "\r\n")
 // 324
-# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" chanel_mods + "\r\n")
+# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" + chanel_mods + "\r\n")
 // 329
 # define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + " " +date + "\r\n")
 // 368
@@ -82,7 +82,7 @@ void				sendOneRPL(std::string rpl, int fd);
 // 696
 # define ERR_INVALIDMODEPARAM(nickname, target, mode_char, parameter) (nickname + " " + target + " " + mode_char + " " + parameter + " :Password must not contain any space\r\n")
 // 475
-# define ERR_BADCHANNELKEY(nickname, channel) (nickname + " " + channel + " :Cannot join channel (+k)\r\n")
+// # define ERR_BADCHANNELKEY(nickname, channel) (nickname + " " + channel + " :Cannot join channel (+k)\r\n")
 
             /* = = =    PASS    = = = */
 // 464
@@ -188,9 +188,18 @@ void				sendOneRPL(std::string rpl, int fd);
 // 333
 #define ROL_TOPICWHOTIME(nickname, chanel, concerned_client_nickname, time ) (":localhost 333 " + nickname +  + " " + chanel + " " concerned_client_nickname + " " + time + "\r\n")
 // 471
-#define ERR_CHANNELISFULL(nickname, chanel) (nickname + " " + chanel + ":Cannot join channel (+l)\r\n")
+// #define ERR_CHANNELISFULL(nickname, chanel) (nickname + " " + chanel + ":Cannot join channel (+l)\r\n")
 
-# define RPL_JOIN(nickname, chanel) (':' + nickname + " JOIN #" + chanel + "\r\n")
+#define SERVER_NAME "localhost"
+#define CLIENT_ID(nickname, username, command) (":" + nickname + "!~" + username + "@" + SERVER_NAME + " " + command + " ")
+
+# define RPL_JOIN(nickname, chanel) (':' + nickname + " JOIN " + chanel + "\r\n")
+#define MODE_USER(nickname, target, mode) (nickname + ": " + target + " " + mode + "\r\n")
+#define MODE_CHANNEL(nickname, channel, mode) (nickname + "#" + channel + " " + mode + "\r\n")
+#define PART(nickname, username, channel, message) (CLIENT_ID(nickname, username, "PART") + "#" + channel + " :" + message + "\r\n")
+#define FORMAT_REPLY(num_rply_numb, nickname) (std::string(":") + SERVER_NAME + " " + num_rply_numb + " " + nickname + " ")
+#define ERR_BADCHANNELKEY(nickname, channel) (FORMAT_REPLY("475", nickname) + channel + " :Cannot join channel (+k)" + "\r\n")
+#define ERR_CHANNELISFULL(nickname, channel) (FORMAT_REPLY("471", nickname) + channel + " :Cannot join channel (+l)" + "\r\n")
 
 #endif
 

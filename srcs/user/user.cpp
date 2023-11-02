@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   user.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 21:58:51 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/02 13:59:36 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,17 +101,22 @@ int &User::get_nc_check(void)
 	return (_check_nc);
 }
 
+std::string &User::getUsername()
+{
+	return(_username);
+}
+
 std::string &User::getNickname()
 {
 	return (_nickname);
 }
 
-int		User::getisOperator()
+int		&User::getisOperator()
 {
 	return (_isOperator);
 }
 
-int		User::getisFounder()
+int		&User::getisFounder()
 {
 	return (_isFounder);
 }
@@ -127,6 +132,7 @@ void	User::setIsFounder(int isFounder)
 	_isFounder = isFounder;
 	// setChanNick();
 }
+
 
 
 void	User::addisInvited(std::string channelName)

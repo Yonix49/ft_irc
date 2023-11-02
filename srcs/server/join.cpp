@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/01 15:38:17 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 13:12:47 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ void Server::join(std::string param, int fd)
 	std::cout << "COMMAND JOIN IS CALLED" << std::endl;
 	std::string	newnick;
 	// char		option;
-	if (cmdLine.size() < 2 || cmdLine.size() > 3)
+	if (cmdLine.size() < 2)
 	{
 		std::cout << "RETURN -1" << std::endl;
-		// rpl nombre d'arguments pas bon
+		// rpl needmoreparams
 		return ;
 	}
 	std::string	channelName = getChannelName(cmdLine[1]);
@@ -49,7 +49,6 @@ void Server::join(std::string param, int fd)
 	{
 		Channel *NewChannel = new Channel(channelName);
 		
-		// applyOptions(cmdLine)->si le channel est creer avec une option, appeler MODE
 		user->setIsOperator(2);
 		if (NewChannel->addUser(*user, 2, channelName, fd) == -1)
 		{
@@ -59,16 +58,12 @@ void Server::join(std::string param, int fd)
 		NewChannel->setNbUsers(1);
 		std::cout << "NB USER IN CHANNEl " << NewChannel->getName() << " IS " << NewChannel->getNbUsers() << std::endl;
 		server._channels.push_back(NewChannel);
+		// applyOptions(cmdLine)->si le channel est creer avec une option, appeler MODE
+
 		std::cout << "channel " << channelName << " is created and " << (*user).getNickname() << " joined the channel"  << std::endl; 
 	}
-	else
+	else if (cmdLine.size() == 2)
 	{
-		// std::cout << "I = [" << i << "]" << std::endl;
-		// on verifie si il y a le mode invit-only, si oui, on check si le user est invite
-
-		
-		
-		// si tout est valide, on ajoute le user a la chan
 		if (server._channels[i]->getLimitUsers() > 0 && server._channels[i]->getNbUsers() >= server._channels[i]->getLimitUsers())
 		{
 			sendOneRPL(ERR_CHANNELISFULL(user->getNickname(), channelName), fd);
@@ -95,10 +90,8 @@ void Server::join(std::string param, int fd)
 			return ;
 		}
 		std::cout << "NB USER IN CHANNEl " << server._channels[i]->getName() << " IS " << server._channels[i]->getNbUsers() << std::endl;
-		// server._channels[i]->setNbUsers(server._channels[i]->getNbUsers() + 1);
 		std::cout << "user : " << (*user).getNickname() << " joined the channel : " << channelName << std::endl; 
 	}
-	std::cout << "AFTER JOIN =========== users in list = " << server._channels[0]->getListUsers() << std::endl;
 	return ;
 }
 

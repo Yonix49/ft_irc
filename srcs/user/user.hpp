@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 17:00:24 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 13:59:48 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,30 +21,31 @@ public:
 	~User();
 	User(std::string nick);
 	User(const User &src);
-	User &operator=(const User &src);
+	User						&operator=(const User &src);
 
-	int &getFd();
-	std::string &getNickname();
-	int getisOperator();
-	int getisFounder();
-	int getisInvited(std::string channelName);
-	void setNickname(std::string name);
-	int &get_nc_check(void);
-	void setFd(int fd);
-	void setIsOperator(int isOperator);
-	void setIsFounder(int isOperator);
+	std::string					&getNickname();
+	std::string					&getUsername();
+	int							&getFd();
+	int							&getisOperator();
+	int							&getisFounder();
+	int							getisInvited(std::string channelName);
+	bool						&get_check_in_server();
+	std::string					&Get_Error();
+	int							&get_nc_check(void);
+	void						setFd(int fd);
+	void						setNickname(std::string name);
+	void						setIsOperator(int isOperator);
+	void						setIsFounder(int isOperator);
+	void						setUsername(std::string name);
+	void						setRealname(std::string name);
+	void						set_in_server(bool _in_server);
+	void						setError(std::string error);
 
-	void setUsername(std::string name);
-	void setRealname(std::string name);
-	void set_in_server(bool _in_server);
-	void incre_nc_check(void);
+	void						incre_nc_check(void);
 	// void						setChanNick();
-	void addisInvited(std::string channelName);
-	void sendMessage(char buffer[1024]);
-	std::string &Get_Error();
-	bool &get_check_in_server();
+	void						addisInvited(std::string channelName);
+	void						sendMessage(char buffer[1024]);
 
-	void setError(std::string error);
 
 
 

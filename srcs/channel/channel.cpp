@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/01 17:24:12 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:19:36 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ bool	Channel::getMode_l(void)
 	return (_mode_l);
 }
 
-int	Channel::getNbUsers(void)
+int	&Channel::getNbUsers(void)
 {
 	return (_nbUsers);
 }
@@ -152,20 +152,16 @@ std::string		Channel::getModes()
 {
 	std::string res;
 
-	res = "mode_i = " + getModes_2(getMode_i()) + "\n";
-	res += "mode_t = " + getModes_2(getMode_t()) + "\n";
-	res += "mode_k = " + getModes_2(getMode_k()) + "\n";
-	res += "mode_l = " + getModes_2(getMode_l()) + "\n";
+	if (getMode_i() == true)
+		res = res + " +i";
+	if (getMode_t() == true)
+		res = res + " +t";
+	if (getMode_k() == true)
+		res = res + " +k";
+	if (getMode_l() == true)
+		res = res + " +l";
 	return (res);
 }
-
-std::string		Channel::getModes_2(bool i)
-{
-	if (i == true)
-		return ("true");
-	return ("false");
-}
-
 
 std::string		Channel::getListUsers(void)
 {
@@ -251,15 +247,15 @@ void	Channel::updateInvited(std::string nickname)
 
 int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 {
-	(void)fd;
 	std::string newnick;
-	// std::cout << "ADDUSER IS CALLED" << std::endl;
+	std::cout << "ADDUSER IS CALLED" << std::endl;
 	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
 	{
 		if (it->getNickname() == user.getNickname())
 		{
 			// rpl user already in channel
 			return (-1);
+			std::cerr << "RETURN IN ADUSER" << std::endl;
 		}
 	}
 	
@@ -279,15 +275,47 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
-	sendOneRPL(RPL_JOIN(user.getNickname(), channelName), fd);
+	sendRPLtoChan(RPL_JOIN(user.getNickname(), channelName));
 	if (getTopic().empty() == true)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
-		sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, getTopic()), fd);
+		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
-	sendRPLtoChan(RPL_ENDOFNAMES(user.getNickname(), channelName));
+	sendRPLtoChan(RPL_ENDOFNAMES(newnick, channelName));
 	return (0);
 }
+
+void	Channel::addOperator(User user)
+{
+	_operators.push_back(user);
+}
+
+
+void	Channel::rmOperator(User user)
+{
+	for (std::vector<User>::iterator it = _operators.begin(); it < _operators.end(); ++it)
+	{
+		if (user.getFd() == it->getFd())
+		{
+			_operators.erase(it);
+			break ;
+		}
+	}
+}
+
+void	Channel::rmUser(User user)
+{
+	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
+	{
+		if (user.getFd() == it->getFd())
+		{
+			_users.erase(it);
+			break ;
+		}
+	}
+}
+
+
 
 int	Channel::isUserinchan(std::string nickname, int type)
 {
@@ -303,5 +331,8 @@ void	Channel::sendRPLtoChan(std::string rpl)
 {
 
 	for (unsigned long i = 0; i < _users.size(); i++)
+	{
 		sendOneRPL(rpl, _users[i].getFd());
+		std::cout << "msg send to " << _users[i].getFd() << std::endl;
+	}
 }

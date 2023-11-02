@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/01 17:35:41 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:57:42 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ struct ServerSocket
 
 typedef void (*CommandFunction)(std::string, int);
 void sendOneRPL(std::string rpl, int fd);
+std::vector<std::string> split(std::string str, std::string delimiters);
 
 class Server
 {
@@ -66,6 +67,7 @@ public:
 	std::vector<std::string>	get_cmdLine(char buffer[1024]);
 
 	int							channelExist(std::string channelName);
+	void						rmChannel(Channel chan);
 
 	static void					join(std::string param, int fd);
 	static void					invite(std::string param, int fd);
@@ -73,8 +75,9 @@ public:
 	static void					part(std::string param, int fd);
 	static void					mode(std::string param, int fd);
 
-	int							mode_t(std::vector<std::string> cmdLine, int i);
-	int							mode_l(std::vector<std::string> cmdLine, int i);
+	int							mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user);
+	int							mode_t(std::vector<std::string> cmdLine, int i, User *user);
+	int							mode_l(std::vector<std::string> cmdLine, int i, User *user);
 	int							mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user);
 	int							mode_i(std::vector<std::string> cmdLine, int i);
 

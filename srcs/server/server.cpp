@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/01 15:22:44 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 16:48:02 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,13 +235,6 @@ int Server::recieve_data(int fd, int isNewUser)
 					size_t messageLength = welcomeMessage.length();
 					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
 						std::cout << "error envoie RPL" << std::endl;
-					for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
-					{
-						std::cout << "========================== nick = " << it->getNickname() << std::endl;
-						std::cout << "========================== fd = " << it->getFd() << std::endl;
-						std::cout << "========================== is_connected = " << it->get_check_in_server() << std::endl
-								<< std::endl;
-					}
 				}
 			}
 			else
@@ -352,17 +345,21 @@ int Server::newUser(int fd, char buffer[1024])
 		return 1;
 	}
 	recieve_data(fd, 1);
-
-	// std::string kenan("kenan");
-	// std::string welcomeMessage = RPL_WELCOME(kenan);
-	// size_t messageLength = welcomeMessage.length();
-	// if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-	// std::cout << "error envoie RPL" << std::endl;
-	// bytesSent = send(fd, "Connection to server is success.\n", 34, 0);
-	// if (bytesSent < 0)
-	// std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
-	// std::cout << "User connected" << std::endl;
 	return 0;
+}
+
+
+void	Server::rmChannel(Channel Chan)
+{
+	for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); ++it)
+	{
+		if (!(*it)->getName().compare(Chan.getName()))
+		{
+			_channels.erase(it);
+			std::cout << "le channel " << (*it)->getName() << " est supprimer" << std::endl;
+			return ;
+		}
+	}
 }
 
 int Server::checkConnection(int fd, char buffer[1024])
