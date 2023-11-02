@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 16:19:36 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:18:15 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,5 +334,17 @@ void	Channel::sendRPLtoChan(std::string rpl)
 	{
 		sendOneRPL(rpl, _users[i].getFd());
 		std::cout << "msg send to " << _users[i].getFd() << std::endl;
+	}
+}
+
+
+
+void	Channel::sendMSGtoChan(std::string rpl, int fd)
+{
+
+	for (unsigned long i = 0; i < _users.size(); i++)
+	{
+		if (_users[i].getFd() != fd)
+			sendOneRPL(rpl, _users[i].getFd());
 	}
 }

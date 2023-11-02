@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 16:57:42 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:11:28 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ public:
 	int							channelExist(std::string channelName);
 	void						rmChannel(Channel chan);
 
+	static void					 	HandlePrivMessage(std::string param, int fd);
+	int							message_user(std::vector<std::string> words, int fd, User *user, std::string param);
 	static void					join(std::string param, int fd);
 	static void					invite(std::string param, int fd);
 	static void					topic(std::string param, int fd);

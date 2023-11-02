@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 16:48:02 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:08:33 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -261,6 +261,7 @@ int Server::recieve_data(int fd, int isNewUser)
 int Server::check_nick(std::string nickname, int fd, User *user)
 {
 	std::string to_compare;
+
 	int gotten_fd;
 	if (nickname.find(' ') != std::string::npos ||
 		nickname.find(',') != std::string::npos ||
@@ -306,28 +307,37 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		User &currentUser = *it;
 		to_compare = currentUser.getNickname();
 		gotten_fd = currentUser.getFd();
-		if (to_compare == nickname && gotten_fd != fd)
+		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
 		{
-			std::cout << "NICKNAME ===== " << nickname << " ||| tocompare == " << to_compare << " fd === " << fd << std::endl;
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
 			char buf[1024];
 			int i = recv(fd, buf, sizeof(buf), 0);
 			buf[i] = '\0';
 			std::string test(buf + 5);
-			std::cout << "NEW NICK RECIEVED = " << test << std::endl;
 			user->setNickname(test);
-			std::cout << " changed his nickname to " << user->getNickname() << std::endl;
+			sendOneRPL(RPL_NICKCHANGE(to_compare, test), fd); //Cette ligne me rend zinzin	
+			std::cout << "Je suis ici ZZZZZZZZZZZZZZZ" << std::endl;
 			return (0);
 		}
-		else
+		else if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == true)
 		{
-			std::string set = user->getNickname();
-			user->setNickname(nickname);
-			std::cout << set << " changed his nickname to " << user->getNickname() << std::endl;
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd);
+			std::cout << "Je suis ici LLLLLLLLLLL" << std::endl;
+
+			return (0);
 		}
+	
 	}
+
+	// std::cout << "Je suis ici BBBBBBBBBBB" << std::endl;
+	// std::string set = user->getNickname();
+	std::cout << "GET NICKNAME" << user->getNickname() << std::endl;
+	std::cout << "NICKNAME == " << nickname << std::endl;
+	sendOneRPL(RPL_NICKCHANGE(user->getNickname() , nickname), fd);
+	user->setNickname(nickname);
 	return (0);
 }
+
 int Server::newUser(int fd, char buffer[1024])
 {
 	(void)buffer;

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:14 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 13:36:35 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:17:17 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ class Channel
 		void						updateInvited(std::string nickname);
 		int							isUserinchan(std::string nickname, int type);
 		void						sendRPLtoChan(std::string rpl);
+		void						sendMSGtoChan(std::string rpl, int fd);
 
 	private:
 		bool						_mode_i;
