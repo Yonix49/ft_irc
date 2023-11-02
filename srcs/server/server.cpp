@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:08:33 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 21:35:09 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,30 +310,29 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
-			char buf[1024];
-			int i = recv(fd, buf, sizeof(buf), 0);
-			buf[i] = '\0';
-			std::string test(buf + 5);
-			user->setNickname(test);
-			sendOneRPL(RPL_NICKCHANGE(to_compare, test), fd); //Cette ligne me rend zinzin	
-			std::cout << "Je suis ici ZZZZZZZZZZZZZZZ" << std::endl;
+			nickname += "_";
+			sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+			user->setNickname(nickname);
+			
 			return (0);
 		}
-		else if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == true)
-		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd);
-			std::cout << "Je suis ici LLLLLLLLLLL" << std::endl;
-
-			return (0);
-		}
-	
 	}
-
-	// std::cout << "Je suis ici BBBBBBBBBBB" << std::endl;
-	// std::string set = user->getNickname();
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		to_compare = currentUser.getNickname();
+		gotten_fd = currentUser.getFd();
+		if (to_compare == nickname && gotten_fd != fd)
+		{
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
+			return (0);
+		}
+	}
 	std::cout << "GET NICKNAME" << user->getNickname() << std::endl;
 	std::cout << "NICKNAME == " << nickname << std::endl;
-	sendOneRPL(RPL_NICKCHANGE(user->getNickname() , nickname), fd);
+	// sendOneRPL(RPL_NICKCHANGE(user->getNickname() , nickname), fd);
+	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 	user->setNickname(nickname);
 	return (0);
 }

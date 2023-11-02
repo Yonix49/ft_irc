@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_cmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:13:19 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 18:42:40 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,12 @@ void Server::initializeCommandMap()
 	commandMap["MODE"] = &Server::mode;
 	commandMap["PART"] = &Server::part;
 	commandMap["PRIVMSG"] = &Server::HandlePrivMessage;
+	commandMap["NOTICE"] = &Server::HandleNoticeMessage;
+	
 	// commandMap["PASS"] = &Server::HandlePassCommand;
 
 }
+
 
 // Ajoutez d'autres commandes ici
 void Server::HandleNickCommand(std::string param, int fd)

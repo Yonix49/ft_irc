@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 18:13:58 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 20:52:20 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ void				sendOneRPL(std::string rpl, int fd);
 # define ERR_NOSUCHNICK(nickname, other_nick) (":localhost 401 " + nickname + " " + other_nick + " :No such nick\r\n")
 // 406# 
 # define ERR_ERRONEUSNICKNAME(nickname) (":localhost 432 * " + nickname + " :Erroneous nickname\r\n")
+#define  NICK(nickname, username, new_nickname) (CLIENT_ID(nickname, username, "NICK") + ":" + new_nickname + "\r\n")
 
 # define ERR_NONICKNAMEGIVEN(nickname) (":localhost 431 * :No nickname given\r\n")
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/01 15:23:50 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 20:02:34 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 			return (1);
 		}
+		user->setUsername(words[6]);
+		user->setRealname(words[6]);
 	}
 	return (0);
 }

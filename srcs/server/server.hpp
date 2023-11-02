@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:11:28 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/02 21:16:14 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,11 @@ public:
 	int							channelExist(std::string channelName);
 	void						rmChannel(Channel chan);
 
-	static void					 	HandlePrivMessage(std::string param, int fd);
+	int 						message_notice(std::vector<std::string> words, int fd, User *user, std::string param);
+	static void 				HandleNoticeMessage(std::string param, int fd);
+
 	int							message_user(std::vector<std::string> words, int fd, User *user, std::string param);
+	static void					HandlePrivMessage(std::string param, int fd);
 	static void					join(std::string param, int fd);
 	static void					invite(std::string param, int fd);
 	static void					topic(std::string param, int fd);
@@ -101,7 +104,7 @@ public:
 	static void					HandleUserCommand(std::string param, int fd);
 	static void					HandlePassCommand(std::string param, int fd);
 
-
+	int 						Same_Nick(std::string nickname, int fd, User *user);
 	int							check_nick(std::string nickname, int fd, User *user);
 	int							check_user_nc(int fd, User *user, std::vector<std::string> words);
 	int							ft_lauch_commmand(int fd, std::string str);
