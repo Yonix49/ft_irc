@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   msg.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 19:47:19 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 19:34:38 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ void Server::HandleNoticeMessage(std::string param, int fd)
 		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
-
 int Server::message_notice(std::vector<std::string> words, int fd, User *user, std::string param)
 {	
 	(void)(fd);
@@ -68,7 +67,6 @@ int Server::message_notice(std::vector<std::string> words, int fd, User *user, s
 	std::string my_nick = user->getNickname();
 	int flag = 0;
 	int gotten_fd;
-
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
 	{
 		User &currentUser = *it;
@@ -86,12 +84,12 @@ int Server::message_notice(std::vector<std::string> words, int fd, User *user, s
 		sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
 		return (1);
 	}
+	size_t startPos = param.find(":"); // Recherche de l'indice de début
 	std::string resultat;
-	size_t pos = param.find(words[1]);
-	if (pos != std::string::npos) 
+	if (startPos != std::string::npos) 
 	{
-	    resultat = param.substr(pos + 7); // "+ 7" pour ignorer "PRIVMSG" et l'espace qui suit
-	    std::cout << "Résultat : " << resultat << std::endl;
+     	resultat = param.substr(startPos +1); // +2 pour ignorer ": "
+    	std::cout << "Message : " << resultat << std::endl;
 	}
 	if (flag == 1)
 	{
@@ -109,7 +107,6 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 	int channel = 0;
 	int gotten_fd;
 	channel = Server::channelExist(words[1]);
-
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
 	{
 		User &currentUser = *it;
@@ -122,7 +119,6 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 			break ; 
 		}
 	}
-
 	if (words[1].c_str()[0] == '#' && channel == -1 && flag == 0)
 	{
 		std::cout << "je suis ici" << std::endl;
@@ -131,28 +127,35 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 	}
 	else if (flag == 0 && channel == -1)
 	{
-		std::cout << "je suis flag == 0 " << words[1] << " " << user->getNickname() << std::endl;
-			
 		sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
 		return (1);
 	}
 	
+	
+	size_t startPos = param.find(":"); // Recherche de l'indice de début
 	std::string resultat;
-	size_t pos = param.find(words[1]);
-	if (pos != std::string::npos) 
+	if (startPos != std::string::npos) 
 	{
-	    resultat = param.substr(pos + 7); // "+ 7" pour ignorer "PRIVMSG" et l'espace qui suit
-	    std::cout << "Résultat : " << resultat << std::endl;
+     	resultat = param.substr(startPos +1); // +2 pour ignorer ": "
+    	std::cout << "Message : " << resultat << std::endl;
 	}
+	
 	if (flag == 1)
 	{
 		std::string message = "Private message from " + user->getNickname();
 		sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare, resultat), gotten_fd);
 	}
-	else if (channel != -1)
+	else if (channel != -1 && _channels[channel]->isUserinchan(user->getNickname(), 0) != -1)
 	{
 		std::string message = "Channel message from " + user->getNickname();
 		_channels[channel]->sendMSGtoChan(PRIVMSG(user->getNickname(), user->getUsername(), _channels[channel]->getName(), resultat), fd);
-	}	
+	}
+	else
+	{
+		sendOneRPL(ERR_NOTONCHANNEL(user->getUsername()
+		, _channels[channel]->getName()), fd);
+		//A changer
+		std::cout << "No present in the channel" << std::endl;
+	}
 	return (0);
 }
