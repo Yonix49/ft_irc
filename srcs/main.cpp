@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/29 17:10:05 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 18:59:08 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	char *end_ptr;
 	long int port = strtol(argv[1], &end_ptr, 10);
 	server.setPort(port);
-	std::cout << port << std::endl;
+	// std::cout << port << std::endl;
 	if (*end_ptr != '\0')
 		return(std::cerr << "Error: Invalid port  " << *end_ptr << std::endl, 4);
 	else if (errno != 0)

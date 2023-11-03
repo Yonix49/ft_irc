@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_cmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:42:40 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 18:59:59 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int Server::use_map_function(std::string buffer, int fd)
 
 		if (strncmp(it->first.c_str(), words[0].c_str(), strlen(words[0].c_str())) == 0)
 		{
-			std::cout << "j'appel la fonction de la map associe " << std::endl;
+			// std::cout << "j'appel la fonction de la map associe " << std::endl;
 			CommandFunction commandFunction = it->second;
 			commandFunction(buffer, fd);
 			break;
@@ -51,6 +51,7 @@ void Server::initializeCommandMap()
 	commandMap["PART"] = &Server::part;
 	commandMap["PRIVMSG"] = &Server::HandlePrivMessage;
 	commandMap["NOTICE"] = &Server::HandleNoticeMessage;
+	// commandMap["QUIT"] = &Server::quit;
 	
 	// commandMap["PASS"] = &Server::HandlePassCommand;
 

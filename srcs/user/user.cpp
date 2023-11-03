@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 13:59:36 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 18:49:27 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ User::User()
 	_isOperator = 0;
 	_isFounder = 0;
 	_check_nc = 0;
+	_hasQuit = 0;
 	_in_server = false;
 	_nickname = "";
-
 }
 
 User::User(std::string name) : _nickname(name)
@@ -39,6 +39,7 @@ User::User(const User &src)
 	_fd = src._fd;
 	_isOperator = src._isOperator;
 	_check_nc = 0;
+	_hasQuit = 0;
 	_in_server = src._in_server;
 }
 // Opérateur d'assignation
@@ -50,6 +51,7 @@ User &User::operator=(const User &src)
 		_fd = src._fd;
 		_isOperator = src._isOperator;
 		_check_nc = 0;
+		_hasQuit = 0;
 		_in_server = src._in_server;
 	}
 	return *this;
@@ -96,9 +98,19 @@ void User::incre_nc_check(void)
 {
 	this->_check_nc++;
 }
+
 int &User::get_nc_check(void)
 {
 	return (_check_nc);
+}
+
+int &User::getHasQuit(void)
+{
+	return (_hasQuit);
+}
+void	User::setHasQuit(int hasQuit)
+{
+	_hasQuit = hasQuit;
 }
 
 std::string &User::getUsername()

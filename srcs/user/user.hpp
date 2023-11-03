@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 13:59:48 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 16:48:38 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ public:
 	bool						&get_check_in_server();
 	std::string					&Get_Error();
 	int							&get_nc_check(void);
+	int							&getHasQuit(void);
 	void						setFd(int fd);
+	void						setHasQuit(int hasQuit);
 	void						setNickname(std::string name);
 	void						setIsOperator(int isOperator);
 	void						setIsFounder(int isOperator);
@@ -60,5 +62,6 @@ private:
 	int							_check_nc;
 	bool						_in_server;
 	std::string					_error;
+	int							_hasQuit;
 };
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 21:16:14 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 19:19:19 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,19 @@
 
 struct ServerSocket
 {
-	struct sockaddr_in serverAddress;
-	struct sockaddr_in clientAddress;
-	socklen_t clientAddrLen;
-	int clientSocket;
-	int serverSocket;
-	int epollFd; // Crée un descripteur de fichier epoll
+	struct sockaddr_in			serverAddress;
+	struct sockaddr_in			clientAddress;
+	socklen_t					clientAddrLen;
+	int							clientSocket;
+	int							serverSocket;
+	int							epollFd;
+	struct epoll_event			event;
+	
 };
 
-typedef void (*CommandFunction)(std::string, int);
-void sendOneRPL(std::string rpl, int fd);
-std::vector<std::string> split(std::string str, std::string delimiters);
+typedef void					(*CommandFunction)(std::string, int);
+void							sendOneRPL(std::string rpl, int fd);
+std::vector<std::string>		split(std::string str, std::string delimiters);
 
 class Server
 {
@@ -48,8 +50,9 @@ public:
 	~Server();
 	Server(int port, const std::string &password);
 	Server(const Server &src);
-	// operateur =
-	Server &operator=(const Server &src);
+	Server						&operator=(const Server &src);
+
+	void						setEvent(struct epoll_event	event);
 	static void					Set_error_message(void);
 	void						setPassword(std::string password);
 	void						setPort(long int port);
@@ -57,14 +60,14 @@ public:
 	std::string					get_password(void);
 	std::string					get_Error_user(int fd);
 	User						*getUserNo(int fd);
+	User						*getUserString(std::string nickname);
+	std::vector<std::string>	get_cmdLine(char buffer[1024]);
 
 	int							createServerSocket();
 	int							launchSocket();
 	int							recieve_data(int fd, int isNewUser);
 	int							checkConnection(int fd, char buffer[1024]);
 	int							newUser(int fd, char buffer[1024]);
-
-	std::vector<std::string>	get_cmdLine(char buffer[1024]);
 
 	int							channelExist(std::string channelName);
 	void						rmChannel(Channel chan);
@@ -79,7 +82,10 @@ public:
 	static void					topic(std::string param, int fd);
 	static void					part(std::string param, int fd);
 	static void					mode(std::string param, int fd);
+	static void					quit(std::string param, int fd);
 
+	std::string					getAllChanToQuit(Server *server, std::string nickname);
+	void						updateInvitedListAfterQuit(Server server, std::string nickname);
 	int							mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user);
 	int							mode_t(std::vector<std::string> cmdLine, int i, User *user);
 	int							mode_l(std::vector<std::string> cmdLine, int i, User *user);
@@ -94,7 +100,6 @@ public:
 	std::vector<std::string>	get_vector_ref(std::string str);
 	int							irsii_argument_check(std::vector<std::string> words, int fd, User *user);
 	int							check_user_irsi(int fd, User *user, std::vector<std::string> words);
-	User						*getUserString(std::string nickname);
 
 	// containers map
 	void						addCommand(const std::string &command, CommandFunction function);
@@ -121,16 +126,16 @@ public:
 	};
 
 private:
-	int									_port;
-	ServerSocket						_serv;
-	std::string 						_password;
-	std::vector<User>					_users;
-	std::vector<Channel *>				_channels;
-	int									_checking_nc;
-	User								*_userTemp;
-	std::string _error;
+	int							_port;
+	ServerSocket				_serv;
+	std::string 				_password;
+	std::vector<User>			_users;
+	std::vector<Channel *>		_channels;
+	int							_checking_nc;
+	User						*_userTemp;
+	std::string					_error;
+	std::map<int, std::string>	errorMessages;
 	std::map<std::string, CommandFunction> commandMap;
-	std::map<int, std::string> errorMessages;
 };
 
 int findUser(std::string str, std::vector<User> users);

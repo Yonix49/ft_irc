@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 13:07:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/01 16:01:58 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 19:02:22 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	Server::topic(std::string param, int fd)
 	if (cmdLine.size() == 2)
 	{
 		// envoyer rpl TOPIC si il y en a un, ou RPL_NOTOPIC si ya pas
-		std::cout << server._channels[i]->getTopic() << std::endl;
+		// std::cout << server._channels[i]->getTopic() << std::endl;
 		if (server._channels[i]->getTopic().empty() == true)
 			sendOneRPL(RPL_NOTOPIC(user->getNickname(), cmdLine[1]), fd);
 		else
@@ -43,7 +43,7 @@ void	Server::topic(std::string param, int fd)
 		if (server._channels[i]->getMode_t() == true && user->getisOperator() < 1)
 			return ;
 		// clear le topic
-		std::cout << "remove topic" << std::endl;
+		// std::cout << "remove topic" << std::endl;
 		server._channels[i]->getTopic().clear();
 		server._channels[i]->sendRPLtoChan(RPL_NOTOPIC(user->getNickname(), cmdLine[1]));
 	}

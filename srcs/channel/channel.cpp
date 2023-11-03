@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 18:18:15 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 18:59:14 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,10 @@ void	Channel::setNbUsers(int nbUsers)
 	_nbUsers = nbUsers;
 }
 
-
+std::vector<User> &Channel::getUsers(void)
+{
+	return (_users);
+}
 
 void	Channel::setMode_i(bool nb)
 {
@@ -248,7 +251,7 @@ void	Channel::updateInvited(std::string nickname)
 int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 {
 	std::string newnick;
-	std::cout << "ADDUSER IS CALLED" << std::endl;
+	// std::cout << "ADDUSER IS CALLED" << std::endl;
 	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
 	{
 		if (it->getNickname() == user.getNickname())
@@ -333,7 +336,7 @@ void	Channel::sendRPLtoChan(std::string rpl)
 	for (unsigned long i = 0; i < _users.size(); i++)
 	{
 		sendOneRPL(rpl, _users[i].getFd());
-		std::cout << "msg send to " << _users[i].getFd() << std::endl;
+		// std::cout << "msg send to " << _users[i].getFd() << std::endl;
 	}
 }
 

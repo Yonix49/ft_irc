@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 20:02:34 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 18:59:29 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			}
 			else
 			{
-				std::cout <<  "111 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
+				// std::cout <<  "111 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 				set_Error_user("ERR_PASSWDMISMATCH", fd);
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
@@ -34,7 +34,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 		}
 		else
 		{
-			std::cout <<  "222 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
+			// std::cout <<  "222 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 			set_Error_user("ERR_PASSWDMISMATCH", fd);
 			
 			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
@@ -52,7 +52,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			{
 				user->incre_nc_check();
 				// user->setNickname(words[5]);
-				std::cout << "good NICK " << words[5] << std::endl;
+				// std::cout << "good NICK " << words[5] << std::endl;
 			}
 		}
 		else

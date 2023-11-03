@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 13:05:19 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 19:00:19 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@ void	Server::mode(std::string param, int fd)
 	int	i = 0;
 	if (cmdLine.size() > 4)
 	{
-		std::cout << "RETURN -1" << std::endl;	
+		// std::cout << "RETURN -1" << std::endl;	
 		return ; // rien envoyer juste ne pas executer la commande 
 	}
 	i = server.channelExist(cmdLine[1]);
 	if (i == -1)
 	{
 		sendOneRPL(ERR_NOSUCHCHANNEL((*user).getNickname(), cmdLine[1]), fd);
-		std::cout << "RETURN -2" << std::endl;	
+		// std::cout << "RETURN -2" << std::endl;	
 		return ;
 	}
 	// if (cmdLine.size() == 2)
@@ -51,6 +51,7 @@ void	Server::mode(std::string param, int fd)
 	}
 	else
 	{
+		//! faire cette condition autrement sinon ca marche pas ( peut etre directement dans les fonctions)
 		// sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
 		std::cerr << "MODE error" << std::endl;
 	}
@@ -156,7 +157,6 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 
 int		Server::mode_i(std::vector<std::string> cmdLine, int i)
 {
-	std::cout << "passage par le mode" << std::endl;
 	if (_channels[i]->getMode_i() == false && cmdLine[2][0] == '+')
 		_channels[i]->setMode_i(true);
 	else if (cmdLine[2][0] == '-')

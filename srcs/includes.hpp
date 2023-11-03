@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 20:52:20 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/03 16:39:09 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,8 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ERR_CHANNELISFULL(nickname, channel) (FORMAT_REPLY("471", nickname) + channel + " :Cannot join channel (+l)" + "\r\n")
 #define RPL_NICKCHANGE(oldNickname, newNickname) (":" + oldNickname + " NICK " + newNickname + "\r\n")
 #define PRIVMSG(nickname, username, dest, msg) (CLIENT_ID(nickname, username, "PRIVMSG") + dest + " :" + msg + "\r\n")
-	
+#define QUIT(nickname, username, message) (CLIENT_ID(nickname, username, "QUIT") + ":" + message + "\r\n")
+
 
 #endif
 
