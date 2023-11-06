@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 18:49:27 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 10:48:10 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,11 @@ int		&User::getisFounder()
 	return (_isFounder);
 }
 
+int		&User::getIsKick()
+{
+	return (_isKick);
+}
+
 void	User::setIsOperator(int isOperator)
 {
 	_isOperator = isOperator;
@@ -142,9 +147,12 @@ void	User::setIsOperator(int isOperator)
 void	User::setIsFounder(int isFounder)
 {
 	_isFounder = isFounder;
-	// setChanNick();
 }
 
+void	User::setIsKick(int isKick)
+{
+	_isKick = isKick;
+}
 
 
 void	User::addisInvited(std::string channelName)

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/03 19:01:48 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 15:44:47 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ int Server::recieve_data(int fd, int isNewUser)
 	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
 	{
 // 
-		if (isNewUser == 1 && str.length() >= 2 && is_connected(fd) == false)
+		if (str.length() >= 2 && is_connected(fd) == false)
 		{
 			std::string lastTwoChars = str.substr(str.length() - 2, 2);
 			if (is_connected(fd) == false && lastTwoChars == "\r\n")
@@ -243,6 +243,7 @@ int Server::recieve_data(int fd, int isNewUser)
 			}
 			else
 			{
+				std::cout << "JE SUISSSSSSSS LA "  << std::endl;
 				nc_check(buffer, fd);
 				if (is_connected(fd) == true)
 				{
@@ -326,7 +327,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 			return (1);
 		}
 	}
-
+	int flag = 0;
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
 	{
 		User &currentUser = *it;
@@ -336,11 +337,16 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
 			nickname += "_";
-			sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 			user->setNickname(nickname);
-			
-			return (0);
+			it = _users.begin();
+			flag = 1;
+			// return (0);
 		}
+	}
+	if (flag == 1)
+	{	
+		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+		return (0);
 	}
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
 	{
@@ -351,12 +357,10 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
 			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
-			return (0);
+			return (1);
 		}
 	}
-	// std::cout << "GET NICKNAME" << user->getNickname() << std::endl;
-	// std::cout << "NICKNAME == " << nickname << std::endl;
-	// sendOneRPL(RPL_NICKCHANGE(user->getNickname() , nickname), fd);
+
 	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 	user->setNickname(nickname);
 	return (0);

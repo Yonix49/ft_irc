@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 18:59:14 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 14:38:01 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,11 +278,12 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
-	sendRPLtoChan(RPL_JOIN(user.getNickname(), channelName));
+	sendRPLtoChan(JOIN(user.getNickname(), user.getUsername(), channelName));
 	if (getTopic().empty() == true)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
+	std::cout << "list Users = " << getListUsers() << std::endl;
 	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
 	sendRPLtoChan(RPL_ENDOFNAMES(newnick, channelName));
 	return (0);

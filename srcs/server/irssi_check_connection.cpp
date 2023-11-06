@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/03 18:59:29 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 15:16:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 				set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 				return (1);
 			}
-			else
-			{
-				user->incre_nc_check();
-				// user->setNickname(words[5]);
-				// std::cout << "good NICK " << words[5] << std::endl;
-			}
+			user->incre_nc_check();
 		}
 		else
 		{

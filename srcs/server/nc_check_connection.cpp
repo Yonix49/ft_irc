@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/03 19:00:54 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 14:55:47 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,13 @@ int Server::nc_check(std::string str, int fd)
 		{
 			if (!words.empty() && words.size() > 0)
 			{
+					std::cout << "je suis laaaaaaaaaaa " << std::endl;
 				if (words[0] == "PASS" && user->get_nc_check() == 0)
 				{
+					std::cout << "je suis mdp " << std::endl;
 					if (words.size() == 2 && words[1] == _password.c_str())
 					{
-						// std::cout << "good password" << std::endl;
+						std::cout << "good password" << std::endl;
 						user->incre_nc_check();
 					}
 					else
@@ -91,7 +93,7 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 		// std::cout << "je suis la" << std::endl;
 		if (words[1].empty() || words[1].length() <= 1)
 		{
-			// std::cout << "je suis la 2" << words[1] << std::endl;
+			std::cout << "je suis la 2" << words[1] << std::endl;
 			sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
 			set_Error_user("ERR_NEEDMOREPARAMS", fd);
 			return (1);
@@ -100,7 +102,7 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 		{
 			words[1] = words[1].substr(0, 10);
 			user->setUsername(words[1]);
-			// std::cout << words[1] << " length == " << words[1].length() << std::endl;
+			std::cout << words[1] << " length == " << words[1].length() << std::endl;
 		}
 		else if (words[2] != "0" && words[3] != "*")
 		{
@@ -116,12 +118,12 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 			}
 			// "kgezgin 0 * :kenan GEZGIN"
 			user->setRealname(words[4]);
-			// std::cout << "real name " << words[4] << std::endl;
+			std::cout << "real name " << words[4] << std::endl;
 		}
 	}
 	else
 	{
-		// std::cout << "Usage of USER Parameters: <username> 0 * <realname>" << std::endl;
+		std::cout << "Usage of USER Parameters: <username> 0 * <realname>" << std::endl;
 		set_Error_user("ERR_NEEDMOREPARAMS", fd);
 		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
 		return (1);

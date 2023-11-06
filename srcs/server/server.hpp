@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/03 19:19:19 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 15:04:31 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ public:
 	static void					part(std::string param, int fd);
 	static void					mode(std::string param, int fd);
 	static void					quit(std::string param, int fd);
+	static void					kick(std::string param, int fd);
+	static void					ping(std::string param, int fd);
 
 	std::string					getAllChanToQuit(Server *server, std::string nickname);
 	void						updateInvitedListAfterQuit(Server server, std::string nickname);
