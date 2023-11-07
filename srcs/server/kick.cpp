@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 17:13:50 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 11:58:22 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:22:13 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	Server::kick(std::string param, int fd)
 	}
 	if (user->getisOperator() < 1 )
 	{
-		sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
+		sendOneRPL(ERR_CHANOPRIVSNEEDED(cmdLine[1], user->getNickname()), fd);
 		return ;
 	}
 	if (user->getisOperator() == 1 && target->getisOperator() > 0)
@@ -75,61 +75,3 @@ void	Server::kick(std::string param, int fd)
 	server._channels[i]->rmUser(*target);
 	server._channels[i]->setNbUsers(server._channels[i]->getNbUsers() - 1);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//! corriger le probleme des nicknames quand on rejoins un chan, ca devrait aussi corriger le kick
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

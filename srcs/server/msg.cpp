@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 19:34:38 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:56:51 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,12 +143,14 @@ int Server::message_user(std::vector<std::string> words, int fd, User *user, std
 	if (flag == 1)
 	{
 		std::string message = "Private message from " + user->getNickname();
-		sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare, resultat), gotten_fd);
+		std::string nickname = "+" + user->getNickname();
+		sendOneRPL(PRIVMSG(nickname, user->getUsername(), to_compare, resultat), gotten_fd);
 	}
 	else if (channel != -1 && _channels[channel]->isUserinchan(user->getNickname(), 0) != -1)
 	{
 		std::string message = "Channel message from " + user->getNickname();
-		_channels[channel]->sendMSGtoChan(PRIVMSG(user->getNickname(), user->getUsername(), _channels[channel]->getName(), resultat), fd);
+		std::string nickname = "+" + user->getNickname();
+		_channels[channel]->sendMSGtoChan(PRIVMSG(nickname, user->getUsername(), _channels[channel]->getName(), resultat), fd);
 	}
 	else
 	{

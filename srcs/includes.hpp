@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 14:37:20 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:19:07 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void				sendOneRPL(std::string rpl, int fd);
 // 481
 # define ERR_NOPRIVILEGES(nickname) (":localhost 481 " + nickname + " :Permission Denied- You're not an IRC operator\r\n")
 // 482
-# define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
+// # define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
 # define ERR_CHANFPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel Foundator\r\n")
 // 501
 # define ERR_UMODEUNKNOWNFLAG(nickname) (":localhost 501 " + nickname + " :Unknown MODE flag\r\n") 
@@ -196,7 +196,7 @@ void				sendOneRPL(std::string rpl, int fd);
 #define CLIENT_ID(nickname, username, command) (":" + nickname + "!~" + username + "@" + SERVER_NAME + " " + command + " ")
 
 # define RPL_JOIN(nickname, chanel) (':' + nickname + " JOIN " + chanel + "\r\n")
-#define MODE_USER(nickname, target, mode) (nickname + ": " + target + " " + mode + "\r\n")
+// #define MODE_USER(nickname, target, mode) (nickname + ": " + target + " " + mode + "\r\n")
 #define MODE_CHANNEL(nickname, channel, mode) (nickname + "#" + channel + " " + mode + "\r\n")
 #define PART(nickname, username, channel, message) (CLIENT_ID(nickname, username, "PART") + "#" + channel + " :" + message + "\r\n")
 #define FORMAT_REPLY(num_rply_numb, nickname) (std::string(":") + SERVER_NAME + " " + num_rply_numb + " " + nickname + " ")
@@ -212,6 +212,8 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ERR_NOTREGISTERED(nickname, command) (std::string(":") + SERVER_NAME + " 451 " + nickname + " " + command + " :You have not registered" + "\r\n")
 #define ERR_NOSUCHSERVER(nickname) (FORMAT_REPLY(" 402", nickname) + SERVER_NAME + " :" + "\r\n")
 #define ERR_NOORIGIN(nickname) (std::string(":") + SERVER_NAME + " 409 " + nickname + " :No origin\r\n")
+#define MODE_USER(nickname, username, target, mode) (CLIENT_ID(nickname, username, "MODE") + target + " " + mode + "\r\n")
+#define ERR_CHANOPRIVSNEEDED(channel, nickname) (std::string(":") + SERVER_NAME + " 482 " + nickname + " " + channel + " :You're not channel operator" + "\r\n")
 
 #endif
 

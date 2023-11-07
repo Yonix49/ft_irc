@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 11:56:08 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 18:51:50 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ void Server::join(std::string param, int fd)
 	}
 	return ;
 }
-
 
 
 int Server::channelExist(std::string channelName)

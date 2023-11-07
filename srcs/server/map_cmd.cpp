@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 15:03:37 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 18:55:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void Server::addCommand(const std::string &command, CommandFunction function)
 {
 	commandMap[command] = function;
 }
-// std::vector<std::string> cmdLine
+
 void Server::initializeCommandMap()
 {
 	commandMap["NICK"] = &Server::HandleNickCommand;
@@ -59,12 +59,9 @@ void Server::initializeCommandMap()
 
 }
 
-
-// Ajoutez d'autres commandes ici
 void Server::HandleNickCommand(std::string param, int fd)
 {
-	// Server server;
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> words = server.get_vector_ref(param);
 	try
@@ -80,6 +77,7 @@ void Server::HandleNickCommand(std::string param, int fd)
 		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
+
 void Server::HandleUserCommand(std::string param, int fd)
 {
 	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
@@ -103,7 +101,7 @@ void Server::HandleUserCommand(std::string param, int fd)
 }
 void Server::HandlePassCommand(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	std::vector<std::string> words = server.get_vector_ref(param);
 	try
 	{

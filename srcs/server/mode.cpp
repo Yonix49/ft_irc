@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 14:33:00 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:53:10 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,26 @@ void	Server::mode(std::string param, int fd)
 		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "MODE"), fd);
 		return ;
 	}
-	i = server.channelExist(cmdLine[1]);
-	if (i == -1)
+	if (findUser(cmdLine[1], server._users) == -1)
 	{
-		sendOneRPL(ERR_NOSUCHCHANNEL((*user).getNickname(), cmdLine[1]), fd);
-		// std::cout << "RETURN -2" << std::endl;
-		return ;
+		i = server.channelExist(cmdLine[1]);
+		if (i == -1)
+		{
+			sendOneRPL(ERR_NOSUCHCHANNEL((*user).getNickname(), cmdLine[1]), fd);
+			// std::cout << "RETURN -2" << std::endl;
+			return ;
+		}
+		if (server._channels[i]->isUserinchan(user->getNickname(), 0) == -1)
+		{
+			
+			sendOneRPL(ERR_NOTONCHANNEL(user->getNickname(), cmdLine[1]), fd);
+			return ;
+		}
 	}
-	if (server._channels[i]->isUserinchan(user->getNickname(), 0) == -1)
+	else if (cmdLine[2].compare("+i\n"))
 	{
-		sendOneRPL(ERR_NOTONCHANNEL(user->getNickname(), cmdLine[1]), fd);
+		// user->setInvisible(true);
+		sendOneRPL(MODE_USER(user->getNickname(), user->getUsername(), user->getNickname(), "+i"), fd);
 		return ;
 	}
 	if (user->getisOperator() > 0)
@@ -54,7 +64,7 @@ void	Server::mode(std::string param, int fd)
 	else
 	{
 		//! faire cette condition autrement sinon ca marche pas ( peut etre directement dans les fonctions)
-		// sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
+		sendOneRPL(ERR_CHANOPRIVSNEEDED(user->getNickname(),cmdLine[1]), fd);
 		std::cerr << "MODE error" << std::endl;
 	}
 }
@@ -93,7 +103,7 @@ int		Server::mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user)
 		msgToSend += 'i';
 	}
 	msgToSend += cmdLine[2][1];
-	_channels[i]->sendRPLtoChan(MODE_USER(user->getNickname(), target->getNickname(), msgToSend));
+	_channels[i]->sendRPLtoChan(MODE_USER(user->getNickname(), user->getUsername(), target->getNickname(), msgToSend));
 	return 0;
 }
 
