@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 15:35:32 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 15:41:57 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ int Server::recieve_data(int fd, int isNewUser)
 			else
 			{
 				std::cout << "JE SUISSSSSSSS LA "  << std::endl;
-				nc_check(str.c_str(), fd);
+					
 				if (is_connected(fd) == true)
 				{
 					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
