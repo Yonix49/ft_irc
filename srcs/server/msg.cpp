@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/07 15:35:24 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 16:20:38 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ void Server::HandlePrivMessage(std::string param, int fd)
 		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
-void Server::HandleNoticeMessage(std::string param, int fd)
+
+void Server::HandleMessageNotice(std::string param, int fd)
 {
 	User	*user;
 
@@ -68,55 +69,56 @@ void Server::HandleNoticeMessage(std::string param, int fd)
 		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
+
 int Server::message_notice(std::vector<std::string> words, int fd, User *user,
-		std::string param)
+        std::string param)
 {
-	int	flag;
-	int	gotten_fd;
+    int    flag;
+    int    gotten_fd;
 
-	(void)(fd);
-	std::string to_compare;
-	std::string my_nick = user->getNickname();
-	flag = 0;
-	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
-	{
-		User &currentUser = *it;
-		gotten_fd = currentUser.getFd();
-		to_compare = currentUser.getNickname();
-		if (to_compare == words[1])
-		{
-			std::cout << words[1] << "words === " << std::endl;
-			flag++;
-			break ;
-		}
-	}
-	if (flag == 0)
-	{
-		sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
-		return (1);
-	}
-	size_t startPos = param.find(":");
-	std::string resultat;
-	if (startPos != std::string::npos)
-	{
-	    resultat = param.substr(startPos + 1);
-	}
-	else
-	{
-	    startPos = param.find(to_compare); // Recherche de l'indice de début
+    (void)(fd);
+    std::string to_compare;
+    std::string my_nick = user->getNickname();
+    flag = 0;
+    for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+    {
+        User &currentUser = *it;
+        gotten_fd = currentUser.getFd();
+        to_compare = currentUser.getNickname();
+        if (to_compare == words[1])
+        {
+            std::cout << words[1] << "words === " << std::endl;
+            flag++;
+            break ;
+        }
+    }
+    if (flag == 0)
+    {
+        sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
+        return (1);
+    }
+    size_t startPos = param.find(":");
+    std::string resultat;
+    if (startPos != std::string::npos)
+    {
+        resultat = param.substr(startPos + 1);
+    }
+    else
+    {
+        startPos = param.find(to_compare); // Recherche de l'indice de début
 
-	    if (startPos != std::string::npos)
-	    {
-	        resultat = param.substr(startPos + to_compare.length() + 1);
-	    }
-	}
-	if (flag == 1)
-	{
-		std::string message = "Private message from " + user->getNickname();
-		sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare,
-					resultat), gotten_fd);
-	}
-	return (0);
+        if (startPos != std::string::npos)
+        {
+            resultat = param.substr(startPos + to_compare.length() + 1);
+        }
+    }
+    if (flag == 1)
+    {
+        std::string message = "Private message from " + user->getNickname();
+        sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare,
+                    resultat), gotten_fd);
+    }
+    return (0);
 }
 int Server::message_user(std::vector<std::string> words, int fd, User *user,
 		std::string param)

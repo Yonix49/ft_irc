@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 15:35:57 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 16:18:03 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ public:
 	void						rmChannel(Channel chan);
 
 	int 						message_notice(std::vector<std::string> words, int fd, User *user, std::string param);
-	static void 				HandleNoticeMessage(std::string param, int fd);
 
 	int							message_user(std::vector<std::string> words, int fd, User *user, std::string param);
 	static void					HandlePrivMessage(std::string param, int fd);
@@ -88,6 +87,7 @@ public:
 	static void					quit(std::string param, int fd);
 	static void					kick(std::string param, int fd);
 	static void					ping(std::string param, int fd);
+	static void					HandleMessageNotice(std::string param, int fd);
 
 	std::string					getAllChanToQuit(Server *server, std::string nickname);
 	void						updateInvitedListAfterQuit(Server server, std::string nickname);

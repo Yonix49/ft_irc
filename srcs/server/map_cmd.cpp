@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 15:25:44 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 16:18:27 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void Server::initializeCommandMap()
 	commandMap["MODE"] = &Server::mode;
 	commandMap["PART"] = &Server::part;
 	commandMap["PRIVMSG"] = &Server::HandlePrivMessage;
-	commandMap["NOTICE"] = &Server::HandleNoticeMessage;
+	commandMap["NOTICE"] = &Server::HandleMessageNotice;
 	commandMap["PING"] = &Server::ping;
 	commandMap["KICK"] = &Server::kick;
 	commandMap["QUIT"] = &Server::quit;
