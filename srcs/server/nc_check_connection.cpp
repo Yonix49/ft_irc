@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 14:55:47 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 10:53:47 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ int Server::nc_check(std::string str, int fd)
 		{
 			if (!words.empty() && words.size() > 0)
 			{
-					std::cout << "je suis laaaaaaaaaaa " << std::endl;
 				if (words[0] == "PASS" && user->get_nc_check() == 0)
 				{
 					std::cout << "je suis mdp " << std::endl;
@@ -37,19 +36,18 @@ int Server::nc_check(std::string str, int fd)
 					}
 					else
 					{
-						sendOneRPL(ERR_NONICKNAMEGIVEN(user->getNickname()), fd);
-						set_Error_user("ERR_PASSWDMISMATCH", fd);
+						sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 						throw Error_rpl();
 					}
 				}
 				else if (words[0] == "NICK" && user->get_nc_check() == 1)
 				{
-					// std::cout << "je suis entrer dans NICK" << std::endl;
 					if (words.size() == 2)
 					{
 						if (check_nick(words[1], fd, user) != 0)
 						{
 							throw Error_rpl();
+							
 						}
 						else
 						{
@@ -58,10 +56,11 @@ int Server::nc_check(std::string str, int fd)
 							// std::cout << "good NICK " << words[1] << std::endl;
 						}
 					}
+					else
+						sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "NICK"), fd);
 				}
 				else if (words[0] == "USER" && user->get_nc_check() == 2)
-				{ // develop la logique ici
-
+				{ 
 					if (check_user_nc(fd, user, words) != 0)
 					{
 						std::cerr << "Erreur commande USER" << std::endl;
@@ -71,7 +70,11 @@ int Server::nc_check(std::string str, int fd)
 					{
 						user->incre_nc_check();
 					}
-					// Je dois check le bon USER ici
+				}
+				else
+				{
+					sendOneRPL(ERR_UNKNOWNCOMMAND(user->getNickname(), words[0]), fd);
+					throw Error_rpl();
 				}
 			}
 		}
@@ -80,7 +83,7 @@ int Server::nc_check(std::string str, int fd)
 			std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
 		}
 	}
-	// std::cout << "nc == " << user->get_nc_check() << std::endl;
+
 	if (user->get_nc_check() == 3)
 		user->set_in_server(true);
 	return 0;
@@ -98,13 +101,14 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 			set_Error_user("ERR_NEEDMOREPARAMS", fd);
 			return (1);
 		}
-		if (words[1].length() > 10) // Username // USERLEN=10
+		else  // Username // USERLEN=10
 		{
-			words[1] = words[1].substr(0, 10);
+			if (words[1].length() > 10)
+				words[1] = words[1].substr(0, 10);
+			std::cout << "set username" << words[1] << std::endl;
 			user->setUsername(words[1]);
-			std::cout << words[1] << " length == " << words[1].length() << std::endl;
 		}
-		else if (words[2] != "0" && words[3] != "*")
+		if (words[2] != "0" && words[3] != "*")
 		{
 			sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
 			set_Error_user("ERR_NEEDMOREPARAMS", fd);
@@ -116,9 +120,9 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 			{
 				words[4] = ":" + words[4];
 			}
-			// "kgezgin 0 * :kenan GEZGIN"
 			user->setRealname(words[4]);
 			std::cout << "real name " << words[4] << std::endl;
+			return (0);		
 		}
 	}
 	else

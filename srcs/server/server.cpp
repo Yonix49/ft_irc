@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 15:44:47 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:01:31 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,7 +360,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 			return (1);
 		}
 	}
-
+	std::cout << "hehooo" << std::endl;
 	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 	user->setNickname(nickname);
 	return (0);

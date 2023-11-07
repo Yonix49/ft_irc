@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 15:04:31 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 13:33:33 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <functional>
 #include <string>
 #include <exception>
+#include <ctime>
+#include <cstdio>
+
 #include <stdexcept> // Pour les exceptions standard (ceci peut dépendre de votre utilisation)
 
 struct ServerSocket
