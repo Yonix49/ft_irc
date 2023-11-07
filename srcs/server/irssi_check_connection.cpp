@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/01 15:23:50 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 15:16:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			}
 			else
 			{
-				std::cout <<  "111 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
+				// std::cout <<  "111 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 				set_Error_user("ERR_PASSWDMISMATCH", fd);
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
@@ -34,7 +34,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 		}
 		else
 		{
-			std::cout <<  "222 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
+			// std::cout <<  "222 mdp == " << words[3] << "|| nickname ==" << user->getNickname() << "  APRES =========================================" << std::endl;
 			set_Error_user("ERR_PASSWDMISMATCH", fd);
 			
 			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
@@ -48,12 +48,7 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 				set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 				return (1);
 			}
-			else
-			{
-				user->incre_nc_check();
-				// user->setNickname(words[5]);
-				std::cout << "good NICK " << words[5] << std::endl;
-			}
+			user->incre_nc_check();
 		}
 		else
 		{
@@ -61,6 +56,8 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 			return (1);
 		}
+		user->setUsername(words[6]);
+		user->setRealname(words[6]);
 	}
 	return (0);
 }

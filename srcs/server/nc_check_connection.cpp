@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/10/31 18:31:41 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 14:55:47 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,10 @@ int Server::nc_check(std::string str, int fd)
 		{
 			if (!words.empty() && words.size() > 0)
 			{
+					std::cout << "je suis laaaaaaaaaaa " << std::endl;
 				if (words[0] == "PASS" && user->get_nc_check() == 0)
 				{
+					std::cout << "je suis mdp " << std::endl;
 					if (words.size() == 2 && words[1] == _password.c_str())
 					{
 						std::cout << "good password" << std::endl;
@@ -42,7 +44,7 @@ int Server::nc_check(std::string str, int fd)
 				}
 				else if (words[0] == "NICK" && user->get_nc_check() == 1)
 				{
-					std::cout << "je suis entrer dans NICK" << std::endl;
+					// std::cout << "je suis entrer dans NICK" << std::endl;
 					if (words.size() == 2)
 					{
 						if (check_nick(words[1], fd, user) != 0)
@@ -53,7 +55,7 @@ int Server::nc_check(std::string str, int fd)
 						{
 							user->incre_nc_check();
 							user->setNickname(words[1]);
-							std::cout << "good NICK " << words[1] << std::endl;
+							// std::cout << "good NICK " << words[1] << std::endl;
 						}
 					}
 				}
@@ -78,7 +80,7 @@ int Server::nc_check(std::string str, int fd)
 			std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
 		}
 	}
-	std::cout << "nc == " << user->get_nc_check() << std::endl;
+	// std::cout << "nc == " << user->get_nc_check() << std::endl;
 	if (user->get_nc_check() == 3)
 		user->set_in_server(true);
 	return 0;
@@ -88,7 +90,7 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 
 	if (words.size() == 5)
 	{
-		std::cout << "je suis la" << std::endl;
+		// std::cout << "je suis la" << std::endl;
 		if (words[1].empty() || words[1].length() <= 1)
 		{
 			std::cout << "je suis la 2" << words[1] << std::endl;

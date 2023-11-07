@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:14 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 18:17:17 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 17:22:51 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Channel
 		Channel& 					operator=(const Channel& src);
 
 		std::string					&getName(void);
+		std::vector<User>			&getUsers(void);
 		std::string					getListUsers(void);
 		std::string					&getTopic(void);
 		std::string					&getPassword(void);

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:18:36 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/25 18:06:41 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/03 19:01:06 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int Server::check_password(std::vector<std::string> str)
 			{
 				if (_password.compare(*(it + 1)) == 0 || _password.empty() != 0)
 				{
-					std::cout << "\033[32mBon mot de passe\033[0m" << std::endl;
+					// std::cout << "\033[32mBon mot de passe\033[0m" << std::endl;
 					return (0);
 				}
 				else
@@ -48,7 +48,7 @@ int Server::check_nickname(std::vector<std::string> str)
 			}
 		}
 	}
-	std::cout << "mon nickname c'est " << nickname << std::endl;
+	// std::cout << "mon nickname c'est " << nickname << std::endl;
 	if (nickname.find(' ') != std::string::npos ||
 		nickname.find(',') != std::string::npos ||
 		nickname.find('*') != std::string::npos ||

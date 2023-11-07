@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:08:33 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 11:26:05 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,27 @@ std::string Server::get_password(void)
 {
 	return (_password);
 }
+
+void	Server::setEvent(struct epoll_event	event)
+{
+	_serv.event = event;
+}
+
+void Server::set_Error_user(std::string error, int fd)
+{
+	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	user = getUserNo(fd);
+	user->setError(error);
+}
+
+std::string Server::get_Error_user(int fd)
+{
+	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	user = getUserNo(fd);
+	if (!user)
+		return (NULL);
+	return (user->Get_Error());
+}
 //---------------------GETTEUR---------------------------///////
 int Server::createServerSocket()
 {
@@ -166,13 +187,14 @@ int Server::createServerSocket()
 					std::cerr << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
 				else
 				{
-					std::cout << "ON ENTRE DANS NEWUSER" << std::endl;
+					// std::cout << "ON ENTRE DANS NEWUSER" << std::endl;
 					newUser(_serv.clientSocket, NULL);
 					isNewUser = 1;
 				}
 			}
 			else
 			{
+				setEvent(event);
 				recieve_data(fd, 0);
 				isNewUser = 0;
 			}
@@ -182,43 +204,37 @@ int Server::createServerSocket()
 	return (_serv.serverSocket);
 }
 
-void Server::set_Error_user(std::string error, int fd)
-{
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
-	user->setError(error);
-}
 
-std::string Server::get_Error_user(int fd)
-{
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
-	if (!user)
-		return (NULL);
-	return (user->Get_Error());
-}
 int Server::recieve_data(int fd, int isNewUser)
 {
-	(void)isNewUser;
-	int bytesRead;
-	// int		bytesSent;
-	int bytesSent2;
-	char buffer[1024];
+	int			bytesRead = -1;
+	char		buffer[1024];
+	std::string	str;
 
-	bytesRead = recv(fd, buffer, sizeof(buffer), 0);
-	if (bytesRead < 0)
-		std::cerr << "Erreur lors de la réception de données du client." << std::endl;
-	else if (bytesRead == 0)
+	memset(buffer, 0, 1024);
+	while (str.find('\n') == std::string::npos)
 	{
-		bytesSent2 = send(fd, "Deconnection reçu par le serveur.\n", 34, 0);
-		if (bytesSent2 < 0)
-			std::cerr << "Erreur lors de l'envoi de la confirmation au client." << std::endl;
-		std::cout << "User disconnected" << std::endl;
-		// Code pour retirer le socket client de votre liste de sockets et d'_serv.epollFd si nécessaire.
-		close(fd);
+		bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+		if (bytesRead < 0)
+			std::cerr << "Erreur lors de la réception de données du client." << std::endl;
+		if (bytesRead == 0)
+		{
+			std::cout << "User disconnected" << std::endl;
+			quit("QUIT leaving", fd);
+			close(fd);
+			return -1;
+		}
+		str = str + buffer;
+		memset(buffer, 0, 1024);
+		std::cout<< "++++[" << str << "]++++" << std::endl;
 	}
-	buffer[bytesRead] = '\0';
-	std::string str(buffer);					   // Convertir le buffer en std::string
+	if (strncmp(str.c_str(), "QUIT", 4) == 0)
+	{
+		std::cout << "User disconnected" << std::endl;
+		quit("QUIT leaving", fd);
+		close(fd);
+		return -1;
+	}
 	std::cout << fd << ": " << str << std::endl;
 	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
 	{
@@ -228,7 +244,7 @@ int Server::recieve_data(int fd, int isNewUser)
 			std::string lastTwoChars = str.substr(str.length() - 2, 2);
 			if (is_connected(fd) == false && lastTwoChars == "\r\n")
 			{
-				irssi_check(buffer, fd);
+				irssi_check(str.c_str(), fd);
 				if (is_connected(fd) == true)
 				{
 					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
@@ -239,7 +255,8 @@ int Server::recieve_data(int fd, int isNewUser)
 			}
 			else
 			{
-				nc_check(buffer, fd);
+				std::cout << "JE SUISSSSSSSS LA "  << std::endl;
+				nc_check(str.c_str(), fd);
 				if (is_connected(fd) == true)
 				{
 					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
@@ -250,13 +267,34 @@ int Server::recieve_data(int fd, int isNewUser)
 			}
 		}
 	}
-	else if (is_connected(fd) == true)
+	else if (isNewUser == 0 && is_connected(fd) == true)
 	{
 		use_map_function(str, fd);
 	}
 	return (0);
 }
-// std::vector<std::string> cmdLine
+
+
+int Server::newUser(int fd, char buffer[1024])
+{
+	(void)buffer;
+	struct epoll_event clientEvent;
+	int bytesSent;
+	(void)bytesSent;
+	User newUser("");
+	newUser.setFd(fd);
+	_users.push_back(newUser);
+	clientEvent.events = EPOLLIN;
+	clientEvent.data.fd = _serv.clientSocket;
+	if (epoll_ctl(_serv.epollFd, EPOLL_CTL_ADD, _serv.clientSocket, &clientEvent) == -1)
+	{
+		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
+		return 1;
+	}
+	recieve_data(fd, 1);
+	return 0;
+}
+
 
 int Server::check_nick(std::string nickname, int fd, User *user)
 {
@@ -301,61 +339,44 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 			return (1);
 		}
 	}
-
+	int flag = 0;
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
 	{
 		User &currentUser = *it;
 		to_compare = currentUser.getNickname();
 		gotten_fd = currentUser.getFd();
+		std::cout << " je suis la 342342 ----" << std::endl;
 		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
-			char buf[1024];
-			int i = recv(fd, buf, sizeof(buf), 0);
-			buf[i] = '\0';
-			std::string test(buf + 5);
-			user->setNickname(test);
-			sendOneRPL(RPL_NICKCHANGE(to_compare, test), fd); //Cette ligne me rend zinzin	
-			std::cout << "Je suis ici ZZZZZZZZZZZZZZZ" << std::endl;
-			return (0);
+			nickname += "_";
+			user->setNickname(nickname);
+			it = _users.begin();
+			flag = 1;
+			// return (0);
 		}
-		else if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == true)
+	}
+	if (flag == 1)
+	{	
+		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+		return (0);
+	}
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		to_compare = currentUser.getNickname();
+		gotten_fd = currentUser.getFd();
+		if (to_compare == nickname && gotten_fd != fd)
 		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd);
-			std::cout << "Je suis ici LLLLLLLLLLL" << std::endl;
-
-			return (0);
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
+			return (1);
 		}
-	
 	}
 
-	// std::cout << "Je suis ici BBBBBBBBBBB" << std::endl;
-	// std::string set = user->getNickname();
-	std::cout << "GET NICKNAME" << user->getNickname() << std::endl;
-	std::cout << "NICKNAME == " << nickname << std::endl;
-	sendOneRPL(RPL_NICKCHANGE(user->getNickname() , nickname), fd);
+	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 	user->setNickname(nickname);
 	return (0);
-}
-
-int Server::newUser(int fd, char buffer[1024])
-{
-	(void)buffer;
-	struct epoll_event clientEvent;
-	int bytesSent;
-	(void)bytesSent;
-	User newUser("");
-	newUser.setFd(fd);
-	_users.push_back(newUser);
-	clientEvent.events = EPOLLIN;
-	clientEvent.data.fd = _serv.clientSocket;
-	if (epoll_ctl(_serv.epollFd, EPOLL_CTL_ADD, _serv.clientSocket, &clientEvent) == -1)
-	{
-		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
-		return 1;
-	}
-	recieve_data(fd, 1);
-	return 0;
 }
 
 

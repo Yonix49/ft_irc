@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/02 18:18:15 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 13:33:53 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,12 +168,15 @@ std::string		Channel::getListUsers(void)
 	std::string userInfo;
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); it++)
 	{
-		if (it->getisOperator() > 0)
-			userInfo += '@';
-		else
-			userInfo += '+';
-		userInfo += it->getNickname();
-		userInfo += ' ';
+		// if (it->getInvisible() == false)
+		// {
+			if (it->getisOperator() > 0)
+				userInfo += '@';
+			else
+				userInfo += '+';
+			userInfo += it->getNickname();
+			userInfo += ' ';
+		// }
 	}
 	return (userInfo);
 }
@@ -199,7 +202,10 @@ void	Channel::setNbUsers(int nbUsers)
 	_nbUsers = nbUsers;
 }
 
-
+std::vector<User> &Channel::getUsers(void)
+{
+	return (_users);
+}
 
 void	Channel::setMode_i(bool nb)
 {
@@ -248,7 +254,7 @@ void	Channel::updateInvited(std::string nickname)
 int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 {
 	std::string newnick;
-	std::cout << "ADDUSER IS CALLED" << std::endl;
+	// std::cout << "ADDUSER IS CALLED" << std::endl;
 	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
 	{
 		if (it->getNickname() == user.getNickname())
@@ -265,23 +271,31 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 		_operators.push_back(user);
 		if (isOperator == 2)
 			user.setIsFounder(1);
-	}
+	}	
 	else
 	{
 		newnick = "+" + user.getNickname();
 		// si le user est invite, on le sors de la liste des invites
 		updateInvited(user.getNickname()); 
 	}
-
+	channelName.erase(0, 1);
+	
+	std::cout << "ICI" << std::endl;
+	std::cout << JOIN(user.getNickname(), user.getUsername(), channelName) << std::endl;
+	std::cout << "ICI" << std::endl;
+	
+	sendRPLtoChan(JOIN(user.getNickname(), user.getUsername(), channelName));
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
-	sendRPLtoChan(RPL_JOIN(user.getNickname(), channelName));
 	if (getTopic().empty() == true)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
-		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
-	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
-	sendRPLtoChan(RPL_ENDOFNAMES(newnick, channelName));
+		sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, _topic), fd);
+	// std::cout << "list Users = " << getListUsers() << std::endl;
+	std::cout << "NEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICK = " << newnick << std::endl;
+	std::cout << "CHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNEL = " << channelName << std::endl;
+	sendOneRPL(RPL_NAMREPLY(newnick, channelName, getListUsers()), fd);
+	sendOneRPL(RPL_ENDOFNAMES(newnick, channelName), fd);
 	return (0);
 }
 
@@ -333,7 +347,7 @@ void	Channel::sendRPLtoChan(std::string rpl)
 	for (unsigned long i = 0; i < _users.size(); i++)
 	{
 		sendOneRPL(rpl, _users[i].getFd());
-		std::cout << "msg send to " << _users[i].getFd() << std::endl;
+		// std::cout << "msg send to " << _users[i].getFd() << std::endl;
 	}
 }
 

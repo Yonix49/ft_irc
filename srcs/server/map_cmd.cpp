@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/02 18:53:59 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/06 18:55:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int Server::use_map_function(std::string buffer, int fd)
 
 		if (strncmp(it->first.c_str(), words[0].c_str(), strlen(words[0].c_str())) == 0)
 		{
-			std::cout << "j'appel la fonction de la map associe " << std::endl;
+			// std::cout << "j'appel la fonction de la map associe " << std::endl;
 			CommandFunction commandFunction = it->second;
 			commandFunction(buffer, fd);
 			break;
@@ -38,7 +38,7 @@ void Server::addCommand(const std::string &command, CommandFunction function)
 {
 	commandMap[command] = function;
 }
-// std::vector<std::string> cmdLine
+
 void Server::initializeCommandMap()
 {
 	commandMap["NICK"] = &Server::HandleNickCommand;
@@ -49,17 +49,19 @@ void Server::initializeCommandMap()
 	commandMap["TOPIC"] = &Server::topic;
 	commandMap["MODE"] = &Server::mode;
 	commandMap["PART"] = &Server::part;
-	commandMap["NICK"] = &Server::kick;
 	commandMap["PRIVMSG"] = &Server::HandlePrivMessage;
+	commandMap["NOTICE"] = &Server::HandleNoticeMessage;
+	commandMap["PING"] = &Server::ping;
+	commandMap["KICK"] = &Server::kick;
+	commandMap["QUIT"] = &Server::quit;
+	
 	// commandMap["PASS"] = &Server::HandlePassCommand;
 
 }
 
-// Ajoutez d'autres commandes ici
 void Server::HandleNickCommand(std::string param, int fd)
 {
-	// Server server;
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> words = server.get_vector_ref(param);
 	try
@@ -75,6 +77,7 @@ void Server::HandleNickCommand(std::string param, int fd)
 		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
+
 void Server::HandleUserCommand(std::string param, int fd)
 {
 	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
@@ -98,7 +101,7 @@ void Server::HandleUserCommand(std::string param, int fd)
 }
 void Server::HandlePassCommand(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	std::vector<std::string> words = server.get_vector_ref(param);
 	try
 	{
