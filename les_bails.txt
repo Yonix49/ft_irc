@@ -106,3 +106,28 @@ _channels->operator
 _channels->users
 	-> si jamais il y a un channel qui n'a plus de users, alors supprimer le channel (pareil pour part)
 server.users
+
+
+//////////////////
+3== Invalid read of size 8
+==94613==    at 0x49C2BA4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::compare(char const*) const (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+==94613==    by 0x4071DC: bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) (basic_string.h:3609)
+==94613==    by 0x406748: Server::irsii_argument_check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >, int, User*) (irssi_check_connection.cpp:20)
+==94613==    by 0x406F2B: Server::irssi_check(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) (irssi_check_connection.cpp:72)
+==94613==    by 0x41BFB9: Server::recieve_data(int, int) (server.cpp:235)
+==94613==    by 0x41BB79: Server::newUser(int, char*) (server.cpp:282)
+==94613==    by 0x41B680: Server::createServerSocket() (server.cpp:191)
+==94613==    by 0x40404F: main (main.cpp:44)
+==94613==  Address 0x4df0c48 is 8 bytes after a block of size 64 alloc'd
+==94613==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==94613==    by 0x40775F: std::__new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
+==94613==    by 0x4076F0: __gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) (alloc_traits.h:133)
+==94613==    by 0x4076AF: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) (stl_vector.h:378)
+==94613==    by 0x4075E0: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) (stl_vector.h:395)
+==94613==    by 0x4074F4: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) (stl_vector.h:332)
+==94613==    by 0x407235: std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) (stl_vector.h:597)
+==94613==    by 0x406F0F: Server::irssi_check(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) (irssi_check_connection.cpp:72)
+==94613==    by 0x41BFB9: Server::recieve_data(int, int) (server.cpp:235)
+==94613==    by 0x41BB79: Server::newUser(int, char*) (server.cpp:282)
+==94613==    by 0x41B680: Server::createServerSocket() (server.cpp:191)
+==94613==    by 0x40404F: main (main.cpp:44)

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/07 11:19:07 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 15:25:30 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void				sendOneRPL(std::string rpl, int fd);
 // 421
 # define ERR_UNKNOWNCOMMAND(nickname, cmd) (":localhost 421 " + nickname + " " + cmd + " :Unknown command\r\n")
 // 461
+
 # define ERR_NEEDMOREPARAMS(nickname, cmd) (":localhost 461 " + nickname + " " + cmd + " :Not enough parameters\r\n")
 
             /* = = =    PING / PONG     = = = */
@@ -212,8 +213,10 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ERR_NOTREGISTERED(nickname, command) (std::string(":") + SERVER_NAME + " 451 " + nickname + " " + command + " :You have not registered" + "\r\n")
 #define ERR_NOSUCHSERVER(nickname) (FORMAT_REPLY(" 402", nickname) + SERVER_NAME + " :" + "\r\n")
 #define ERR_NOORIGIN(nickname) (std::string(":") + SERVER_NAME + " 409 " + nickname + " :No origin\r\n")
+#define BOTMSG(nickname, username, dest, msg) (std::string(":") + nickname + "!~" + username + "@" + SERVER_NAME + " PRIVMSG " + dest + " :" + msg + "\r\n")
 #define MODE_USER(nickname, username, target, mode) (CLIENT_ID(nickname, username, "MODE") + target + " " + mode + "\r\n")
 #define ERR_CHANOPRIVSNEEDED(channel, nickname) (std::string(":") + SERVER_NAME + " 482 " + nickname + " " + channel + " :You're not channel operator" + "\r\n")
+
 
 #endif
 

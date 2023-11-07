@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 18:51:53 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/07 15:35:57 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <functional>
 #include <string>
 #include <exception>
+#include <ctime>
+#include <cstdio>
+
 #include <stdexcept> // Pour les exceptions standard (ceci peut dépendre de votre utilisation)
 
 struct ServerSocket
