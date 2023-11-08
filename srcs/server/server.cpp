@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 11:26:05 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 13:28:38 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,9 +211,10 @@ int Server::recieve_data(int fd, int isNewUser)
 	char		buffer[1024];
 	std::string	str;
 
-	memset(buffer, 0, 1024);
+	// memset(buffer, 0, 1024);
 	while (str.find('\n') == std::string::npos)
 	{
+		memset(buffer, 0, 1024);
 		bytesRead = recv(fd, buffer, sizeof(buffer), 0);
 		if (bytesRead < 0)
 			std::cerr << "Erreur lors de la réception de données du client." << std::endl;
@@ -225,20 +226,16 @@ int Server::recieve_data(int fd, int isNewUser)
 			return -1;
 		}
 		str = str + buffer;
-		memset(buffer, 0, 1024);
-		std::cout<< "++++[" << str << "]++++" << std::endl;
+		std::cout<< "===============[" << str << std::endl;
+		std::cout << "babar" << std::endl;
 	}
 	if (strncmp(str.c_str(), "QUIT", 4) == 0)
 	{
 		std::cout << "User disconnected" << std::endl;
 		quit("QUIT leaving", fd);
 		close(fd);
-		return -1;
-	}
-	std::cout << fd << ": " << str << std::endl;
-	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
+		return -1; 
 	{
-// 
 		if (str.length() >= 2 && is_connected(fd) == false)
 		{
 			std::string lastTwoChars = str.substr(str.length() - 2, 2);
@@ -256,7 +253,7 @@ int Server::recieve_data(int fd, int isNewUser)
 			else
 			{
 				std::cout << "JE SUISSSSSSSS LA "  << std::endl;
-				nc_check(str.c_str(), fd);
+				nc_check(str, fd);
 				if (is_connected(fd) == true)
 				{
 					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
@@ -373,7 +370,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 			return (1);
 		}
 	}
-
+	std::cout << "hehooo" << std::endl;
 	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
 	user->setNickname(nickname);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/06 18:55:21 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 13:26:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,25 @@
 int Server::use_map_function(std::string buffer, int fd)
 {
 	(void)(fd);
+	int flag = 0;
 	std::vector<std::string> words = get_vector_ref(buffer);
 	if (words.size() <= 0)
 		return (1);
 	for (std::map<std::string, CommandFunction>::const_iterator it = commandMap.begin(); it != commandMap.end(); ++it)
 	{
-		// std::cout << fd << ": " << buffer << std::endl;
-		// std::cout << fd << ": " << words[0] << " " << it->first << std::endl;
-		// std::cout << "strncmp ==" << strncmp(it->first.c_str(), words[0].c_str(), strlen(words[0].c_str())) << std::endl;
-
 		if (strncmp(it->first.c_str(), words[0].c_str(), strlen(words[0].c_str())) == 0)
 		{
-			// std::cout << "j'appel la fonction de la map associe " << std::endl;
 			CommandFunction commandFunction = it->second;
 			commandFunction(buffer, fd);
+			flag++;
 			break;
 		}
+	}
+	if (flag == 0)
+	{
+		User *user = Server::getUserNo(fd);
+		sendOneRPL(ERR_UNKNOWNCOMMAND(user->getNickname(), words[0]), fd);
+		return (1);
 	}
 	return (0);
 }
@@ -50,13 +53,12 @@ void Server::initializeCommandMap()
 	commandMap["MODE"] = &Server::mode;
 	commandMap["PART"] = &Server::part;
 	commandMap["PRIVMSG"] = &Server::HandlePrivMessage;
-	commandMap["NOTICE"] = &Server::HandleNoticeMessage;
+	commandMap["NOTICE"] = &Server::HandleMessageNotice;
 	commandMap["PING"] = &Server::ping;
 	commandMap["KICK"] = &Server::kick;
 	commandMap["QUIT"] = &Server::quit;
-	
-	// commandMap["PASS"] = &Server::HandlePassCommand;
 
+	// commandMap["PASS"] = &Server::HandlePassCommand;
 }
 
 void Server::HandleNickCommand(std::string param, int fd)
@@ -70,6 +72,12 @@ void Server::HandleNickCommand(std::string param, int fd)
 		{
 			if (server.check_nick(words[1], fd, user) != 0)
 				throw Error_rpl();
+		}
+		else
+		{
+			sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "NICK"), fd);
+			throw Error_rpl();
+
 		}
 	}
 	catch (const Error_rpl &ex)
@@ -115,7 +123,5 @@ void Server::HandlePassCommand(std::string param, int fd)
 	}
 	catch (const Error_rpl &ex)
 	{
-		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
-		sendOneRPL(server.get_Error_user(fd), fd);
 	}
 }
