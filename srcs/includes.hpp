@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/08 13:24:58 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 13:34:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,18 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ERR_CHANNELISFULL(nickname, channel) (FORMAT_REPLY("471", nickname) + channel + " :Cannot join channel (+l)" + "\r\n")
 #define RPL_NICKCHANGE(oldNickname, newNickname) (":" + oldNickname + " NICK " + newNickname + "\r\n")
 #define PRIVMSG(nickname, username, dest, msg) (CLIENT_ID(nickname, username, "PRIVMSG") + dest + " :" + msg + "\r\n")
-	
+#define QUIT(nickname, username, message) (CLIENT_ID(nickname, username, "QUIT") + ":" + message + "\r\n")
+#define PONG(nickname) (std::string(":") + SERVER_NAME + " PONG " + SERVER_NAME + " :" + SERVER_NAME + "\r\n")
+#define KICK(nickname, username, channel, target, message) (CLIENT_ID(nickname, username, "KICK") + "#" + channel + " " + target + " :" + message + "\r\n")
+#define JOIN(nickname, username, channel) (CLIENT_ID(nickname, username, "JOIN") + ":#" + channel + "\r\n")
+
+#define ERR_NOTREGISTERED(nickname, command) (std::string(":") + SERVER_NAME + " 451 " + nickname + " " + command + " :You have not registered" + "\r\n")
+#define ERR_NOSUCHSERVER(nickname) (FORMAT_REPLY(" 402", nickname) + SERVER_NAME + " :" + "\r\n")
+#define ERR_NOORIGIN(nickname) (std::string(":") + SERVER_NAME + " 409 " + nickname + " :No origin\r\n")
+#define BOTMSG(nickname, username, dest, msg) (std::string(":") + nickname + "!~" + username + "@" + SERVER_NAME + " PRIVMSG " + dest + " :" + msg + "\r\n")
+#define MODE_USER(nickname, username, target, mode) (CLIENT_ID(nickname, username, "MODE") + target + " " + mode + "\r\n")
+#define ERR_CHANOPRIVSNEEDED(channel, nickname) (std::string(":") + SERVER_NAME + " 482 " + nickname + " " + channel + " :You're not channel operator" + "\r\n")
+
 
 #endif
 

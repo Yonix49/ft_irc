@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/08 13:28:38 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 18:58:55 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ int Server::createServerSocket()
 		}
 		for (int i = 0; i < numEvents; i++)
 		{
+			std::cout << "new event" << std::endl;
 			fd = events[i].data.fd;
 			if (fd == _serv.serverSocket)
 			{
@@ -209,41 +210,65 @@ int Server::recieve_data(int fd, int isNewUser)
 {
 	int			bytesRead = -1;
 	char		buffer[1024];
-	std::string	str;
 
 	// memset(buffer, 0, 1024);
-	while (str.find('\n') == std::string::npos)
+	
+	// memset(buffer, 0, 1024);
+	bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+	if (bytesRead < 0)
+		std::cerr << "Erreur lors de la réception de données du client." << std::endl;
+	if (bytesRead == 0)
 	{
-		memset(buffer, 0, 1024);
-		bytesRead = recv(fd, buffer, sizeof(buffer), 0);
-		if (bytesRead < 0)
-			std::cerr << "Erreur lors de la réception de données du client." << std::endl;
-		if (bytesRead == 0)
-		{
-			std::cout << "User disconnected" << std::endl;
-			quit("QUIT leaving", fd);
-			close(fd);
-			return -1;
-		}
-		str = str + buffer;
-		std::cout<< "===============[" << str << std::endl;
-		std::cout << "babar" << std::endl;
+		std::cout << "User disconnected" << std::endl;
+		quit("QUIT leaving", fd);
+		close(fd);
+		return -1;
 	}
+	buffer[bytesRead] = '\0';
+	std::string	str(buffer);
+	std::cout << "LALALALAALALALALALALALJDEVIENS FOU = " << str << std::endl;
+	
+	// while (str.find("\r\n") == std::string::npos)
+	// {
+	// 	memset(buffer, 0, 1024);
+	// 	bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+	// 	if (bytesRead < 0)
+	// 		std::cerr << "Erreur lors de la réception de données du client." << std::endl;
+	// 	if (bytesRead == 0)
+	// 	{
+	// 		std::cout << "User disconnected" << std::endl;
+	// 		quit("QUIT leaving", fd);
+	// 		close(fd);
+	// 		return -1;
+	// 	}
+	// 	str = str + buffer;
+	// 	std::cout<< "===============[" << str << std::endl;
+	// 	std::cout << "babar" << std::endl;
+	// }
+	
 	if (strncmp(str.c_str(), "QUIT", 4) == 0)
 	{
 		std::cout << "User disconnected" << std::endl;
 		quit("QUIT leaving", fd);
 		close(fd);
 		return -1; 
+	}
+	std::cout << fd << ": " << str << std::endl;
+	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
 	{
-		if (str.length() >= 2 && is_connected(fd) == false)
+		std::cout << "babar" << std::endl;
+// 
+		if (str.length() > 2 && is_connected(fd) == false)
 		{
+		std::cout << "babar" << std::endl;
 			std::string lastTwoChars = str.substr(str.length() - 2, 2);
 			if (is_connected(fd) == false && lastTwoChars == "\r\n")
 			{
+		std::cout << "babar" << std::endl;
 				irssi_check(str.c_str(), fd);
 				if (is_connected(fd) == true)
 				{
+		std::cout << "babar" << std::endl;
 					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
 					size_t messageLength = welcomeMessage.length();
 					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
@@ -342,7 +367,6 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		User &currentUser = *it;
 		to_compare = currentUser.getNickname();
 		gotten_fd = currentUser.getFd();
-		std::cout << " je suis la 342342 ----" << std::endl;
 		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	

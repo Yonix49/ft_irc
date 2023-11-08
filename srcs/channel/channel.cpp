@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/07 13:33:53 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 18:03:25 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,8 +292,8 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 	else
 		sendOneRPL(RPL_TOPIC(user.getNickname(), channelName, _topic), fd);
 	// std::cout << "list Users = " << getListUsers() << std::endl;
-	std::cout << "NEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICK = " << newnick << std::endl;
-	std::cout << "CHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNEL = " << channelName << std::endl;
+	// std::cout << "NEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICKNEWNICK = " << newnick << std::endl;
+	// std::cout << "CHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNELCHANNEL = " << channelName << std::endl;
 	sendOneRPL(RPL_NAMREPLY(newnick, channelName, getListUsers()), fd);
 	sendOneRPL(RPL_ENDOFNAMES(newnick, channelName), fd);
 	return (0);
