@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/09 17:46:52 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 20:10:18 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,11 +223,17 @@ int Server::recieve_data(int fd, int isNewUser)
         close(fd);
         return -1;
     }
+		std::cout << "bytes Read here" << bytesRead << std::endl;
+
     buffer[bytesRead] = '\0';
-    std::string str(buffer);                       // Convertir le buffer en std::string
+    std::string str(buffer);                     // Convertir le buffer en std::string
+	for (int i = 0; str[i]; i++)
+    {
+        std::cout << fd << ": " << str[i] << std::endl;
+    }
     while (1)
     {
-        if (str[str.length() - 1] == '\n')
+        if (str[0] == '\0' || str[str.length() - 1] == '\n')
         {
             std::cout << "Je rentre dans le break" << std::endl;
             break;

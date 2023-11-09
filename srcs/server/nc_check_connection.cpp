@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/09 17:44:38 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 19:45:06 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int Server::nc_check(std::string str, int fd, int flag)
 	User *user = getUserNo(fd);
 	if (!user)
 		return (1);
-	// int flag = 0;
 	if (flag == 0)
 	{
 		if (nc_not_ctrl_d(words, fd, user) != 0)
@@ -31,9 +30,9 @@ int Server::nc_check(std::string str, int fd, int flag)
 			std::cout << "ctrl D case NC" << std::endl;
 			return (1);
 		}
+	}
 		if (user->get_nc_check() == 3)
 			user->set_in_server(true);
-	}
 	return 0;
 }
 int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
