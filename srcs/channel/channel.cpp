@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 14:38:01 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 17:19:07 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,22 +163,6 @@ std::string		Channel::getModes()
 	return (res);
 }
 
-std::string		Channel::getListUsers(void)
-{
-	std::string userInfo;
-	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); it++)
-	{
-		if (it->getisOperator() > 0)
-			userInfo += '@';
-		else
-			userInfo += '+';
-		userInfo += it->getNickname();
-		userInfo += ' ';
-	}
-	return (userInfo);
-}
-
-
 void	Channel::setUsers(std::vector<User> users)
 {
 	_users = users;
@@ -278,15 +262,35 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 
 	_users.push_back(user);
 	_nbUsers = _nbUsers + 1;
+	channelName.erase(0, 1);
 	sendRPLtoChan(JOIN(user.getNickname(), user.getUsername(), channelName));
 	if (getTopic().empty() == true)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	std::cout << "list Users = " << getListUsers() << std::endl;
-	sendRPLtoChan(RPL_NAMREPLY(newnick, channelName, getListUsers()));
-	sendRPLtoChan(RPL_ENDOFNAMES(newnick, channelName));
+	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
+	{
+		sendOneRPL(RPL_NAMREPLY(newnick, "#" + channelName, getListUsers()), it->getFd());
+		sendOneRPL(RPL_ENDOFNAMES(newnick, "#" + channelName), it->getFd());
+	}
 	return (0);
+}
+
+
+std::string		Channel::getListUsers(void)
+{
+	std::string userInfo;
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); it++)
+	{
+		if (it->getisOperator() > 0)
+			userInfo += '@';
+		// else
+		// 	userInfo += '+';
+		userInfo += it->getNickname();
+		userInfo += ' ';
+	}
+	return (userInfo);
 }
 
 void	Channel::addOperator(User user)

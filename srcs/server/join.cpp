@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 11:56:08 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 15:29:49 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void Server::join(std::string param, int fd)
 			NewChannel->setTopic(cmdLine[2]);
 		server._channels.push_back(NewChannel);
 	}
-	else if (cmdLine.size() == 2)
+	else	
 	{
 		if (server._channels[i]->getLimitUsers() > 0 && server._channels[i]->getNbUsers() >= server._channels[i]->getLimitUsers())
 		{
@@ -65,11 +65,13 @@ void Server::join(std::string param, int fd)
 			sendOneRPL(ERR_INVITEONLYCHAN(user->getNickname(), channelName), fd);
 			return ;
 		}
-		else if (server._channels[i]->getPassword().empty() == false
-				&& (cmdLine.size() != 3 || cmdLine[2].compare(server._channels[i]->getPassword())))
+		else if (server._channels[i]->getMode_k() == true)
 		{
-			sendOneRPL(ERR_BADCHANNELKEY(user->getNickname(), server._channels[i]->getName()), fd);
-			return ;
+			if (cmdLine.size() != 3 || cmdLine[2].compare(server._channels[i]->getPassword()))
+			{
+				sendOneRPL(ERR_BADCHANNELKEY(user->getNickname(), server._channels[i]->getName()), fd);
+				return ;
+			}
 		}
 		user->setIsOperator(0);
 		if (server._channels[i]->addUser(*user, 0, channelName, fd) == -1)
@@ -78,7 +80,7 @@ void Server::join(std::string param, int fd)
 	return ;
 }
 
-
+//! essayer de join deux fois le meme channel
 
 int Server::channelExist(std::string channelName)
 {

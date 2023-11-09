@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 14:33:00 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 15:47:45 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,34 @@ int		Server::mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	}
 	if (cmdLine[2][0] == '+')
 	{
-		target->setIsOperator(1);
-		_channels[i]->addOperator(*target);
-		msgToSend += '+';
+		if (target->getisOperator() < 1)
+		{
+			target->setIsOperator(1);
+			_channels[i]->addOperator(*target);
+			msgToSend += '+';
+		}
+		else
+		{
+			sendOneRPL(ERR_CHANFPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
+			return -1;
+		}
 	}
 	else if (cmdLine[2][0] == '-')
 	{
-		target->setIsOperator(0);
-		_channels[i]->rmOperator(*target);
-		msgToSend += 'i';
+		if (target->getisOperator() < 2)
+		{
+			target->setIsOperator(0);
+			_channels[i]->rmOperator(*target);
+			msgToSend += '-';
+		}
+		else
+		{
+			sendOneRPL(ERR_CHANFPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
+			return -1;
+		}
 	}
 	msgToSend += cmdLine[2][1];
-	_channels[i]->sendRPLtoChan(MODE_USER(user->getNickname(), target->getNickname(), msgToSend));
+	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername(), cmdLine[1], msgToSend));
 	return 0;
 }
 
@@ -116,7 +132,7 @@ int		Server::mode_l(std::vector<std::string> cmdLine, int i, User *user)
 		msgToSend += '-';
 	}
 	msgToSend += cmdLine[2][1];
-	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), cmdLine[1], msgToSend));
+	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername(), cmdLine[1], msgToSend));
 	return (0);
 }
 
@@ -134,7 +150,7 @@ int		Server::mode_t(std::vector<std::string> cmdLine, int i, User *user)
 		msgToSend += '-';
 	}
 	msgToSend += cmdLine[2][1];
-	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), cmdLine[1], msgToSend));
+	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername()	, cmdLine[1], msgToSend));
 	return (0);
 }
 
@@ -146,6 +162,8 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 		{
 			_channels[i]->setPassword(cmdLine[3]);
 			_channels[i]->setMode_k(true);
+			std::string msgToSend("+k");
+			_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername()	, cmdLine[1], msgToSend));
 		}
 		else
 		{
@@ -158,6 +176,8 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	{
 		_channels[i]->getPassword().clear();
 		_channels[i]->setMode_k(false);
+		std::string msgToSend("-k");
+		_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername()	, cmdLine[1], msgToSend));
 	}
 	return (0);
 }

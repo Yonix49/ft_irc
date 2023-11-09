@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 11:01:31 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/09 17:46:52 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ User *Server::getUserString(std::string nickname)
 	return (NULL);
 }
 
-std::vector<std::string> Server::get_vector_ref(std::string str)
+std::vector<std::string> Server::get_vector_ref(const std::string &str)
 {
 	std::istringstream iss(str); // Utiliser un std::istringstream pour diviser en mots
 	std::vector<std::string> words;
@@ -110,6 +110,7 @@ std::vector<std::string> Server::get_vector_ref(std::string str)
 	while (iss >> word)
 	{
 		words.push_back(word);
+		// std::cout << "ici" << word << std::endl;
 	}
 	return (words);
 }
@@ -138,6 +139,7 @@ std::string Server::get_Error_user(int fd)
 		return (NULL);
 	return (user->Get_Error());
 }
+
 //---------------------GETTEUR---------------------------///////
 int Server::createServerSocket()
 {
@@ -195,7 +197,7 @@ int Server::createServerSocket()
 			else
 			{
 				setEvent(event);
-				recieve_data(fd, 0);
+				recieve_data(fd, isNewUser);
 				isNewUser = 0;
 			}
 		}
@@ -207,61 +209,103 @@ int Server::createServerSocket()
 
 int Server::recieve_data(int fd, int isNewUser)
 {
-	// std::cout << "i New USER ? = " << isNewUser << std::endl;
-	int bytesRead;
-	char buffer[1024];
-
-	bytesRead = recv(fd, buffer, sizeof(buffer), 0);
-	if (bytesRead < 0)
-		std::cerr << "Erreur lors de la réception de données du client." << std::endl;
-	else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
-	{
-		std::cout << "User disconnected" << std::endl;
-		quit("QUIT leaving", fd);
-		close(fd);
-		return -1;
-	}
-	buffer[bytesRead] = '\0';
-	std::string str(buffer);					   // Convertir le buffer en std::string
-	std::cout << fd << ": " << str << std::endl;
-	if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
-	{
-// 
-		if (str.length() >= 2 && is_connected(fd) == false)
-		{
-			std::string lastTwoChars = str.substr(str.length() - 2, 2);
-			if (is_connected(fd) == false && lastTwoChars == "\r\n")
-			{
-				irssi_check(buffer, fd);
-				if (is_connected(fd) == true)
-				{
-					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
-					size_t messageLength = welcomeMessage.length();
-					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-						std::cout << "error envoie RPL" << std::endl;
-				}
-			}
-			else
-			{
-				std::cout << "JE SUISSSSSSSS LA "  << std::endl;
-				nc_check(buffer, fd);
-				if (is_connected(fd) == true)
-				{
-					std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
-					size_t messageLength = welcomeMessage.length();
-					if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
-						std::cout << "error envoie RPL" << std::endl;
-				}
-			}
-		}
-	}
-	else if (isNewUser == 0 && is_connected(fd) == true)
-	{
-		use_map_function(str, fd);
-	}
-	return (0);
+    // std::cout << "i New USER ? = " << isNewUser << std::endl;
+    int bytesRead;
+    char buffer[1024];
+    int flag = 0;
+    bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+    if (bytesRead < 0)
+        std::cerr << "Erreur lors de la réception de données du client." << std::endl;
+    else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
+    {
+        std::cout << "User disconnected" << std::endl;
+        quit("QUIT leaving", fd);
+        close(fd);
+        return -1;
+    }
+    buffer[bytesRead] = '\0';
+    std::string str(buffer);                       // Convertir le buffer en std::string
+    while (1)
+    {
+        if (str[str.length() - 1] == '\n')
+        {
+            std::cout << "Je rentre dans le break" << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << "je suis dans la boucle " << std::endl;
+            flag++;
+            bytesRead = recv(fd, buffer, sizeof(buffer), 0);
+            if (bytesRead < 0)
+            {
+                std::cerr << "Erreur lors de la réception de données du client." << std::endl;
+                // Gérez l'erreur comme nécessaire
+            }
+            else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
+            {
+                std::cout << "User disconnected" << std::endl;
+                quit("QUIT leaving", fd);
+                close(fd);
+                return -1;
+            }
+            buffer[bytesRead] = '\0';
+            str += std::string(buffer); // Ajoutez les données reçues à la fin de la chaîne existante
+        }
+    }
+    std::cout << "flag == " << flag << "fd" << fd << std::endl; // CTRL D case for 1; 
+    for (int i = 0; str[i]; i++)
+    {
+        std::cout << fd << ": " << str[i] << std::endl;
+    }
+    if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
+    {
+        if (str.length() >= 2 && is_connected(fd) == false)
+        {
+            std::string lastTwoChars = str.substr(str.length() - 2, 2);
+            if (is_connected(fd) == false && lastTwoChars == "\r\n")
+            {
+                for (size_t i = 0; i < str.length(); i++) 
+                {
+                    if (buffer[i] == '\r' && str[i + 1] == '\n')
+                    {
+                        buffer[i] = ' ';
+                        buffer[i + 1] = ' ';
+                    }
+                }
+                std::cout << "BUFFER DANS IRSSI CHECK" << buffer << std::endl;
+                irssi_check(buffer, fd);
+                if (is_connected(fd) == true)
+                {
+                    std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+                    size_t messageLength = welcomeMessage.length();
+                    if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+                    {
+                        exit (0);
+                        std::cout << "error envoie RPL" << std::endl;
+                    }
+                }
+            }
+            else
+            {
+                std::cout << "JE SUISSSSSSSS LA " << str << std::endl;
+                nc_check(str.c_str(), fd, flag);
+                if (is_connected(fd) == true)
+                {
+                    std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
+                    size_t messageLength = welcomeMessage.length();
+                    if (send(fd, welcomeMessage.c_str(), messageLength, 0) == -1)
+                        std::cout << "error envoie RPL" << std::endl;
+                }
+            }
+        }
+    }
+    else if (isNewUser == 0 && is_connected(fd) == true)
+    {
+        use_map_function(str, fd);
+    }
+    return (0);
 }
-
 
 int Server::newUser(int fd, char buffer[1024])
 {
@@ -279,7 +323,8 @@ int Server::newUser(int fd, char buffer[1024])
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	recieve_data(fd, 1);
+	// seulement si c une connection irssi
+	// recieve_data(fd, 1);
 	return 0;
 }
 
@@ -304,6 +349,13 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 
 	char c = nickname[0];
 	if (c == ':' || c == '#' || c == '&')
+	{
+		std::cerr << "Invalid character in nickname" << std::endl;
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+		return (1);
+	}
+	if (nickname.compare("$BOT") == 0)
 	{
 		std::cerr << "Invalid character in nickname" << std::endl;
 		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);

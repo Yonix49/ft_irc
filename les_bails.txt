@@ -1,133 +1,332 @@
-1 - gerer la connection genre username et password
-
-2 - gerer les users dans un vector lors des connect et disconnect
-
-3 - gerer les modos (donc les commandes qui vont avec) et les users basique
-
-4 - gerer les channels dans une map et donc bien stocker les
-	users pour pouvoir envoyer un message correctement a tout les membres du channel
-
-5 - bien recuperer les messages, parser et detecter les commandes avec les options etc
-
-6 - faire toutes les commandes (JOIN, MSG, PRIVMSG etc...)
-
-7 - quitter le programme propement
-
-
-
-
-irssi renvoie toujours /r/n a la fin des commandes
-pour netcat il faut toujours check dans l'ordre en premier le PASS puis le NICK puis le USER
-
-
-
----------GERER LA CONNECTION-----------
-1- accept les clients
-2- tant que PASS n'est pas valide ne pas check NICK
-3- des que PASS est valide, check NICK
-4- des que NICK est valide, check USER
-5- des que les 3 sont valides, envoyer le RPL_WELCOME
-
-il faut attendre du client les commandes PASS puis NICK puis USER,
-irssi peut les envoyer tous d'un coup, tandis que nc va envoyer un par un.
-nc peut envoyer de bonnes commandes mais de le mauvais ordre, il faut faire attention a ca
-nc ne fait aucun parsing avant d'envoyer une commande
-
-Donc il faut coder les commandes PASS NICK et USER en lisant la doc,
-et les appeler des que la commande est recue depuis le client.
-
-Une fois que les trois variables sont bien set, on peut faire un RPL_WELCOME et executer les commandes du serveur.
-
-
-
-
-Class User
+int Server::message_notice(std::vector<std::string> words, int fd, User *user,
+		std::string param)
 {
-	username
-	fd
-	clientadress
-	etc...
+	int	flag;
+	int	gotten_fd;
+
+	(void)(fd);
+	std::string to_compare;
+	std::string my_nick = user->getNickname();
+	flag = 0;
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		gotten_fd = currentUser.getFd();
+		to_compare = currentUser.getNickname();
+		if (to_compare == words[1])
+		{
+			std::cout << words[1] << "words === " << std::endl;
+			flag++;
+			break ;
+		}
+	}
+	if (flag == 0)
+	{
+		sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
+		return (1);
+	}
+	size_t startPos = param.find(":");
+	std::string resultat;
+	if (startPos != std::string::npos)
+	{
+	    resultat = param.substr(startPos + 1);
+	}
+	else
+	{
+	    startPos = param.find(to_compare); // Recherche de l'indice de début
+
+	    if (startPos != std::string::npos)
+	    {
+	        resultat = param.substr(startPos + to_compare.length() + 1);
+	    }
+	}
+	if (flag == 1)
+	{
+		std::string message = "Private message from " + user->getNickname();
+		sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare,
+					resultat), gotten_fd);
+	}
+	return (0);
+}
+
+int Server::message_user(std::vector<std::string> words, int fd, User *user,
+		std::string param)
+{
+	(void)(fd);
+	std::string to_compare;
+	std::string my_nick = user->getNickname();
+	std::string messageBot;
+
+	int flag = 0;
+	int channel = 0;
+	int bot = 0;
+
+	int gotten_fd;
+	channel = Server::channelExist(words[1]);
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		gotten_fd = currentUser.getFd();
+		to_compare = currentUser.getNickname();
+		if (to_compare == words[1])
+		{
+			flag++;
+			break ;
+		}
+	}
+	if (words[1].c_str()[0] == '#' && channel == -1 && flag == 0)
+	{
+		std::cout << "je suis ici" << std::endl;
+		sendOneRPL(ERR_NOSUCHCHANNEL(user->getNickname(), words[1]), fd);
+		return (1);
+	}
+	else if (flag == 0 && channel == -1)
+	{
+		sendOneRPL(ERR_WASNOSUCHNICK(user->getNickname(), words[1]), fd);
+		return (1);
+	}
+	size_t pos_bot = 0;
+	pos_bot = param.find("$BOT");
+	if (pos_bot != std::string::npos)
+	{
+		std::cout << "BOT == 1" << std::endl;
+		bot = 1;
+	}
+	
+	std::cout << "je suis laaaaaaaa" << param << "BUFFER  dans msg ========== " << std::endl;
+	std::string resultat; // Déclarez resultat ici, en dehors des blocs if
+	size_t startPos;
+	startPos = param.find(":"); // Recherche de l'indice de début
+	
+	if (channel != -1) // Cas channel
+	{
+	    // Réinitialisez startPos
+	    startPos = param.find(_channels[channel]->getName());
+	
+	    if (startPos != std::string::npos)
+	    {
+	        resultat = param.substr(startPos + _channels[channel]->getName().length() + 1);
+	    }
+	}
+	else if (startPos != std::string::npos) // Cas irssi
+	{
+	    resultat = param.substr(startPos + 1);
+	}
+	else // Cas NC
+	{
+	    // Réinitialisez startPos
+	    startPos = param.find(to_compare);
+	
+	    if (startPos != std::string::npos)
+	    {
+	        resultat = param.substr(startPos + to_compare.length() + 1);
+	    }
+	}
+	std::cout << "flag == " << flag << std::endl;
+	if (flag == 1)
+	{
+		std::cout << "Je suis ici khey " << std::endl;
+		std::cout << "NICKname " << user->getNickname() << std::endl;
+		std::cout << "getUsername " <<  user->getUsername() << std::endl;
+		std::cout << "destinateure " << to_compare << std::endl;
+		std::cout << "message " << resultat << std::endl;
+
+		sendOneRPL(PRIVMSG(user->getNickname(), user->getUsername(), to_compare,
+					resultat), gotten_fd);
+	}
+	else if (channel != -1
+			&& _channels[channel]->isUserinchan(user->getNickname(), 0) != -1)
+	{
+		_channels[channel]->sendMSGtoChan(PRIVMSG(user->getNickname(),
+			user->getUsername(), _channels[channel]->getName(),
+			resultat), fd);
+			
+		if (bot == 1)
+		{
+			std::tm localTime = {}; // Initialise localTime avec des zéros
+			messageBot = "Salutations, " + user->getNickname() + "! Il est actuellement ";
+			char hourStr[3] = {};
+			int hour12 = (localTime.tm_hour % 12 == 0) ? 12 : localTime.tm_hour % 12;
+			std::snprintf(hourStr, sizeof(hourStr), "%02d", hour12);
+			messageBot += hourStr;
+			messageBot += ":";
+			char minStr[3] = {};
+			std::snprintf(minStr, sizeof(minStr), "%02d", localTime.tm_min);
+			messageBot += minStr;
+			messageBot += (localTime.tm_hour < 12) ? " AM" : " PM";
+			std::cout << messageBot << "MSG BOTT" << std::endl;
+			std::string botnick("Bot Johnny");
+			_channels[channel]->sendRPLtoChan(PRIVMSG(botnick,
+			user->getUsername(), _channels[channel]->getName(),
+			messageBot));
+		}
+	}
+	else
+	{
+		sendOneRPL(ERR_NOTONCHANNEL(user->getUsername(),
+					_channels[channel]->getName()), fd);
+		std::cout << "No present in the channel" << std::endl;
+	}
+	return (0);
 }
 
 
-Class channel
+////////////////
+int Server::nc_check(std::string str, int fd)
 {
-	name
-	nb_user
-	map(user)
-	etc...
-}
+	std::vector<std::string> words = get_vector_ref(str);
+	User *user = getUserNo(fd);
+	if (!user)
+		return (1);
+	// int flag = 0;
 
-Class server
+	if (user && user->get_nc_check() <= 2)
+	{
+		try
+		{
+			if (!words.empty() && words.size() > 0)
+			{
+				if (words[0] == "PASS" && user->get_nc_check() == 0)
+				{
+					std::cout << "je suis mdp " << std::endl;
+					if (words.size() == 2 && words[1] == _password.c_str())
+					{
+						std::cout << "good password" << std::endl;
+						user->incre_nc_check();
+					}
+					else
+					{
+						sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
+						throw Error_rpl();
+					}
+				}
+				else if (words[0] == "NICK" && user->get_nc_check() == 1)
+				{
+					if (words.size() == 2)
+					{
+						if (check_nick(words[1], fd, user) != 0)
+						{
+							throw Error_rpl();
+							
+						}
+						else
+						{
+							user->incre_nc_check();
+							user->setNickname(words[1]);
+							// std::cout << "good NICK " << words[1] << std::endl;
+						}
+					}
+					else
+						sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "NICK"), fd);
+				}
+				else if (words[0] == "USER" && user->get_nc_check() == 2)
+				{ 
+					if (check_user_nc(fd, user, words) != 0)
+					{
+						std::cerr << "Erreur commande USER" << std::endl;
+						throw Error_rpl();
+					}
+					else
+					{
+						user->incre_nc_check();
+					}
+				}
+				else
+				{
+					sendOneRPL(ERR_UNKNOWNCOMMAND(user->getNickname(), words[0]), fd);
+					throw Error_rpl();
+				}
+			}
+		}
+		catch (const Error_rpl &ex)
+		{
+			std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
+		}
+	}
+
+	if (user->get_nc_check() == 3)
+		user->set_in_server(true);
+	return 0;
+}
+////
+int Server::check_nick(std::string nickname, int fd, User *user)
 {
-	class channel
-	et tout le reste
+	std::string to_compare;
+
+	int gotten_fd;
+	if (nickname.find(' ') != std::string::npos ||
+		nickname.find(',') != std::string::npos ||
+		nickname.find('*') != std::string::npos ||
+		nickname.find('?') != std::string::npos ||
+		nickname.find('@') != std::string::npos ||
+		nickname.find('!') != std::string::npos)
+	{
+		std::cerr << "Invalid character in nickname" << std::endl;
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+		return 1;
+	}
+
+	char c = nickname[0];
+	if (c == ':' || c == '#' || c == '&')
+	{
+		std::cerr << "Invalid character in nickname" << std::endl;
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+		return (1);
+	}
+	if (nickname.length() > 200)
+	{
+		std::cerr << "Nickname is too long" << std::endl;
+		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
+		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+		return (1);
+	}
+	for (int i = 0; nickname[i]; i++)
+	{
+		if (nickname[i] < 32 || nickname[i] > 126)
+		{
+			std::cerr << "Invalid character in nickname" << std::endl;
+			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
+			set_Error_user("ERR_ERRONEUSNICKNAME", fd);
+			return (1);
+		}
+	}
+	int flag = 0;
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		to_compare = currentUser.getNickname();
+		gotten_fd = currentUser.getFd();
+		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
+		{
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			nickname += "_";
+			user->setNickname(nickname);
+			it = _users.begin();
+			flag = 1;
+			// return (0);
+		}
+	}
+	if (flag == 1)
+	{	
+		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+		return (0);
+	}
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		User &currentUser = *it;
+		to_compare = currentUser.getNickname();
+		gotten_fd = currentUser.getFd();
+		if (to_compare == nickname && gotten_fd != fd)
+		{
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
+			return (1);
+		}
+	}
+	std::cout << "hehooo" << std::endl;
+	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+	user->setNickname(nickname);
+	return (0);
 }
-
-
-
-
------------- doc --------------
-
-
-
-A client is anything connecting to a server that is not another server.
-Each client is distinguished from other clients by a unique nickname.
-In addition to the nickname, all servers must have the following information about all clients:
-the real name/address of the host that the client is connecting from,
-the username of the client on that host,
-and the server to which the client is connected.
-
-Nicknames are non-empty strings with the following restrictions:
-
-They MUST NOT contain any of the following characters: space (' ', 0x20), comma (',', 0x2C), asterisk ('*', 0x2A), question mark ('?', 0x3F), exclamation mark ('!', 0x21), at sign ('@', 0x40).
-They MUST NOT start with any of the following characters: dollar ('$', 0x24), colon (':', 0x3A).
-They MUST NOT start with a character listed as a channel type prefix.
-They SHOULD NOT contain any dot character ('.', 0x2E).
-
-
-
------------ a faire --------------
-
-- faire /mode sans arguments
-- a chaque modifications de mode envoyer un rpl a tout les users du channel	
-- faire mode -o 																//fait
-- gerer correctement tout les rpl, que ce soit en cas d'erreur ou de succes
-- faire part, kick, messages, (notice, who, whois ?)
-- gerer la deconnection
-- gerer les modes a la creation d'un channel
-
-
-
-pour quit
-
-_channels->invited
-_channels->operator
-_channels->users
-	-> si jamais il y a un channel qui n'a plus de users, alors supprimer le channel (pareil pour part)
-server.users
-
-
-//////////////////
-3== Invalid read of size 8
-==94613==    at 0x49C2BA4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::compare(char const*) const (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
-==94613==    by 0x4071DC: bool std::operator==<char, std::char_traits<char>, std::allocator<char> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, char const*) (basic_string.h:3609)
-==94613==    by 0x406748: Server::irsii_argument_check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >, int, User*) (irssi_check_connection.cpp:20)
-==94613==    by 0x406F2B: Server::irssi_check(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) (irssi_check_connection.cpp:72)
-==94613==    by 0x41BFB9: Server::recieve_data(int, int) (server.cpp:235)
-==94613==    by 0x41BB79: Server::newUser(int, char*) (server.cpp:282)
-==94613==    by 0x41B680: Server::createServerSocket() (server.cpp:191)
-==94613==    by 0x40404F: main (main.cpp:44)
-==94613==  Address 0x4df0c48 is 8 bytes after a block of size 64 alloc'd
-==94613==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
-==94613==    by 0x40775F: std::__new_allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(unsigned long, void const*) (new_allocator.h:137)
-==94613==    by 0x4076F0: __gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::allocate(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >&, unsigned long) (alloc_traits.h:133)
-==94613==    by 0x4076AF: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_allocate(unsigned long) (stl_vector.h:378)
-==94613==    by 0x4075E0: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_create_storage(unsigned long) (stl_vector.h:395)
-==94613==    by 0x4074F4: std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) (stl_vector.h:332)
-==94613==    by 0x407235: std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::vector(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) (stl_vector.h:597)
-==94613==    by 0x406F0F: Server::irssi_check(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int) (irssi_check_connection.cpp:72)
-==94613==    by 0x41BFB9: Server::recieve_data(int, int) (server.cpp:235)
-==94613==    by 0x41BB79: Server::newUser(int, char*) (server.cpp:282)
-==94613==    by 0x41B680: Server::createServerSocket() (server.cpp:191)
-==94613==    by 0x40404F: main (main.cpp:44)

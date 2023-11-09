@@ -6,7 +6,7 @@
 /*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/07 13:33:33 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/08 21:53:51 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,14 @@ public:
 
 	int							check_nickname(std::vector<std::string> str);
 	int							check_password(std::vector<std::string> str);
-	int							nc_check(std::string str, int fd);
+	int							nc_check(std::string str, int fd, int flag);
+	int 						nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user);
+	int 						nc_ctrl_d_case(std::vector<std::string> words, int fd , User *user);
+
 	int							irssi_check(std::string str, int fd);
+
 	void						initialize_command_map();
-	std::vector<std::string>	get_vector_ref(std::string str);
+	std::vector<std::string>	get_vector_ref(const std::string &str);
 	int							irsii_argument_check(std::vector<std::string> words, int fd, User *user);
 	int							check_user_irsi(int fd, User *user, std::vector<std::string> words);
 
@@ -119,6 +123,8 @@ public:
 	int							check_user_nc(int fd, User *user, std::vector<std::string> words);
 	int							ft_lauch_commmand(int fd, std::string str);
 	bool						is_connected(int fd);
+	int 						Cap_case(std::vector<std::string> words, int fd, User *user);
+	int 						No_Cap_case(std::vector<std::string> words, int fd, User *user);
 
 	class Error_rpl : public std::exception
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   includes.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/07 12:08:58 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/09 17:41:52 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,8 @@ void				sendOneRPL(std::string rpl, int fd);
 // 481
 # define ERR_NOPRIVILEGES(nickname) (":localhost 481 " + nickname + " :Permission Denied- You're not an IRC operator\r\n")
 // 482
-# define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
-# define ERR_CHANFPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel Foundator\r\n")
+
+
 // 501
 # define ERR_UMODEUNKNOWNFLAG(nickname) (":localhost 501 " + nickname + " :Unknown MODE flag\r\n") 
 // 696
@@ -170,7 +170,7 @@ void				sendOneRPL(std::string rpl, int fd);
 // 473
 # define ERR_INVITEONLYCHAN(nickname, chanel) (":localhost 473 " +  nickname + " " + chanel + " :Cannot join channel (+i)\r\n")
 // 443
-# define ERR_USERONCHANNEL(client, nick, channel) (client + " " + nick + " " + channel + " :is already on channel")
+#define ERR_USERONCHANNEL(nickname, channel, concerned_client_nickname) (std::string(":") + SERVER_NAME + " 443 " + nickname + " " + concerned_client_nickname + " #" + channel + " :is already on channel" + "\r\n")
 // 341
 # define RPL_INVITING(nickname, target, channel) (":localhost 341 " + nickname + " " + target + " :" + channel + "\r\n") // used
 
@@ -197,8 +197,8 @@ void				sendOneRPL(std::string rpl, int fd);
 #define CLIENT_ID(nickname, username, command) (":" + nickname + "!~" + username + "@" + SERVER_NAME + " " + command + " ")
 
 # define RPL_JOIN(nickname, chanel) (':' + nickname + " JOIN " + chanel + "\r\n")
-#define MODE_USER(nickname, target, mode) (nickname + ": " + target + " " + mode + "\r\n")
-#define MODE_CHANNEL(nickname, channel, mode) (nickname + "#" + channel + " " + mode + "\r\n")
+#define MODE_USER(nickname, username, target, mode) (CLIENT_ID(nickname, username, "MODE") + target + " " + mode + "\r\n")
+#define MODE_CHANNEL(nickname, username, channel, mode) (CLIENT_ID(nickname, username, "MODE") + "" + channel + " " + mode + "\r\n")
 #define PART(nickname, username, channel, message) (CLIENT_ID(nickname, username, "PART") + "#" + channel + " :" + message + "\r\n")
 #define FORMAT_REPLY(num_rply_numb, nickname) (std::string(":") + SERVER_NAME + " " + num_rply_numb + " " + nickname + " ")
 #define ERR_BADCHANNELKEY(nickname, channel) (FORMAT_REPLY("475", nickname) + channel + " :Cannot join channel (+k)" + "\r\n")
@@ -214,7 +214,8 @@ void				sendOneRPL(std::string rpl, int fd);
 #define ERR_NOSUCHSERVER(nickname) (FORMAT_REPLY(" 402", nickname) + SERVER_NAME + " :" + "\r\n")
 #define ERR_NOORIGIN(nickname) (std::string(":") + SERVER_NAME + " 409 " + nickname + " :No origin\r\n")
 #define BOTMSG(nickname, username, dest, msg) (std::string(":") + nickname + "!~" + username + "@" + SERVER_NAME + " PRIVMSG " + dest + " :" + msg + "\r\n")
-
+# define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
+# define ERR_CHANFPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel Foundator\r\n")
 #endif
 
 #endif

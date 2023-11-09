@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 17:13:50 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 11:58:22 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/08 14:58:28 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,10 @@ void	Server::kick(std::string param, int fd)
 				reason = reason + " ";
 		}
 	}
+	std::string channelName = cmdLine[1];
+	channelName.erase(0, 1);
 	server._channels[i]->sendRPLtoChan(KICK(user->getNickname(), user->getUsername(),
-										cmdLine[1], target->getNickname(), reason));
+										channelName, target->getNickname(), reason));
 	if (user->getisOperator() > 0)
 		server._channels[i]->rmOperator(*target);
 	server._channels[i]->rmUser(*target);

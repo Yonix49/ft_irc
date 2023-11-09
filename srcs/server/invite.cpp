@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:05:02 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/10/31 17:27:47 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/09 17:42:21 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	Server::invite(std::string param, int fd)
 	if (findUser(cmdLine[1], server._users) == -1)
 	{
 		// no user
-		std::cerr << "INVITE RETURN -2" << std::endl;
+		sendOneRPL(ERR_NOSUCHNICK(user->getNickname(), cmdLine[2]), fd);
 		return ;
 	}
 	
@@ -58,8 +58,7 @@ void	Server::invite(std::string param, int fd)
 	// le user qui est invite ne doit pas deja etre dans les channel, si oui envoyer  ERR_USERONCHANNEL
 	if (server._channels[i]->isUserinchan(cmdLine[1], 0) > -1)
 	{
-		std::string irssi("IRSSI");
-		sendOneRPL(ERR_USERONCHANNEL(irssi, cmdLine[1], cmdLine[2]), fd);
+		sendOneRPL(ERR_USERONCHANNEL(user->getNickname(), cmdLine[1], cmdLine[2]), fd);
 		return ;
 	}
 	
