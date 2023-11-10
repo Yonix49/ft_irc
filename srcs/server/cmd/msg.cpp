@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   msg.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 15:17:09 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:10 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
+
 #include <ctime>
 void Server::HandlePrivMessage(std::string param, int fd)
 {
@@ -37,7 +40,6 @@ void Server::HandlePrivMessage(std::string param, int fd)
 	}
 	catch (const Error_rpl &ex)
 	{
-		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
 void Server::HandleNoticeMessage(std::string param, int fd)
@@ -65,7 +67,6 @@ void Server::HandleNoticeMessage(std::string param, int fd)
 	}
 	catch (const Error_rpl &ex)
 	{
-		std::cerr << "Erreur : " << server.get_Error_user(fd) << std::endl;
 	}
 }
 int Server::message_notice(std::vector<std::string> words, int fd, User *user,

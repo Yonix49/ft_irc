@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ping.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 10:01:16 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 10:34:14 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:29 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
+
 
 void	Server::ping(std::string param, int fd)
 {

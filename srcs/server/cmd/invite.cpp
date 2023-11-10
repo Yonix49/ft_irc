@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:05:02 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 17:42:21 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:00 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
 
 void	Server::invite(std::string param, int fd)
 {

@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 11:36:54 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:08 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
+
 
 void	Server::mode(std::string param, int fd)
 {

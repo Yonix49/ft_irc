@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 11:03:50 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:21:51 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
 		}
 		catch (const Error_rpl &ex)
 		{
-			std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
 		}
 	}
 	return (0);
@@ -115,7 +114,7 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 			set_Error_user("ERR_NEEDMOREPARAMS", fd);
 			return (1);
 		}
-		else  // Username // USERLEN=10
+		else 
 		{
 			if (words[1].length() > 10)
 				words[1] = words[1].substr(0, 10);
@@ -153,7 +152,6 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 {
 	std::vector<std::string>::iterator it;
 	std::vector<std::string> elementsApresUser;
-	// int flag = 0;
 	for (it = words.begin(); it != words.end(); ++it)
 	{
 		if (user->get_nc_check() == 0)
@@ -179,14 +177,12 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 		        if (it + 1 != words.end()) // VÃ©rifie si it + 1 est encore valide
 				{
 					std::string elementApresNick = *(it + 1); 
-					std::cout << "nick apres " << elementApresNick << std::endl; 
 
 					if (check_nick(elementApresNick, fd, user) == 0)
 					{
 						std::cout << "jai bien set le user" << std::endl;
 						user->incre_nc_check();
 						continue ;
-						// user->setNickname(elementApresNick);
 					}
 					else
 					{
@@ -210,7 +206,6 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 					elementsApresUser.push_back(*it);
 					++it;
 				}
-				std::cout << "size ==" << elementsApresUser.size() << std::endl;
 				if (elementsApresUser.size() != 5)
 				{
 					sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"),
@@ -237,11 +232,5 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 			}
 		}
 	}
-	// if (flag == 0)
-	// {
-	// 	sendOneRPL(ERR_UNKNOWNCOMMAND(user->getNickname(), words[0]), fd);
-	// 	return (1);	
-	// }
-	
 	return (0);
 }

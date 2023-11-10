@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 11:16:52 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:36:54 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
 
 
 // ne pas oublier de gerer si un channel est supprime ou pas

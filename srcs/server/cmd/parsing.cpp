@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 17:18:36 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 19:01:06 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:44:32 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../server.hpp"
+
+
+
 
 int Server::check_password(std::vector<std::string> str)
 {
@@ -68,14 +71,7 @@ int Server::check_nickname(std::vector<std::string> str)
 		std::cout << "\033[1;31mLe nickname start avec un char invalides\033[0m" << std::endl;
 		return (-3);
 	}
-	// if (!_users.empty())
-	// {
 	_users.back().setNickname(nickname);
-	// }
-	// else
-	// {
-	// 	std::cout << "je suis la" << std::endl;	// Gérer le cas où le vecteur est vide, par exemple, en ajoutant un nouvel utilisateur.
-	// }
 
 	return 0;
 }

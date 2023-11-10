@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 11:49:23 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:21:18 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,13 +189,11 @@ int Server::createServerSocket()
 			fd = events[i].data.fd;
 			if (fd == _serv.serverSocket)
 			{
-				// Gérer une nouvelle connexion entrante
 				_serv.clientSocket = accept(_serv.serverSocket, (struct sockaddr *)&_serv.clientAddress, &_serv.clientAddrLen);
 				if (_serv.clientSocket == -1)
 					std::cerr << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
 				else
 				{
-					// std::cout << "ON ENTRE DANS NEWUSER" << std::endl;
 					newUser(_serv.clientSocket, NULL);
 					isNewUser = 1;
 				}
@@ -215,7 +213,6 @@ int Server::createServerSocket()
 
 int Server::recieve_data(int fd, int isNewUser)
 {
-    // std::cout << "i New USER ? = " << isNewUser << std::endl;
     int bytesRead;
     char buffer[1024];
     int flag = 0;
@@ -229,31 +226,22 @@ int Server::recieve_data(int fd, int isNewUser)
         close(fd);
         return -1;
     }
-		// std::cout << "bytes Read here" << bytesRead << std::endl;
 
     buffer[bytesRead] = '\0';
-    std::string str(buffer);                     // Convertir le buffer en std::string
-	// for (int i = 0; str[i]; i++)
-    // {
-    //     std::cout << fd << ": " << str[i] << std::endl;
-    // }
-    std::cout << fd << ": " << str << std::endl;
+    std::string str(buffer);
     while (1)
     {
         if (str[0] == '\0' || str[str.length() - 1] == '\n')
         {
-            // std::cout << "Je rentre dans le break" << std::endl;
             break;
         }
         else
         {
-            // std::cout << "je suis dans la boucle " << std::endl;
             flag++;
             bytesRead = recv(fd, buffer, sizeof(buffer), 0);
             if (bytesRead < 0)
             {
                 std::cerr << "Erreur lors de la réception de données du client." << std::endl;
-                // Gérez l'erreur comme nécessaire
             }
             else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
             {
@@ -263,15 +251,11 @@ int Server::recieve_data(int fd, int isNewUser)
                 return -1;
             }
             buffer[bytesRead] = '\0';
-            str += std::string(buffer); // Ajoutez les données reçues à la fin de la chaîne existante
+            str += std::string(buffer); 
         }
     }
-    // std::cout << "flag == " << flag << "fd" << fd << std::endl; // CTRL D case for 1; 
-    // for (int i = 0; str[i]; i++)
-    // {
-    //     std::cout << fd << ": " << str[i] << std::endl;
-    // }
-    if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
+
+    if (!str.empty() && is_connected(fd) == false)
     {
         if (str.length() >= 2 && is_connected(fd) == false)
         {
@@ -286,7 +270,6 @@ int Server::recieve_data(int fd, int isNewUser)
                         buffer[i + 1] = ' ';
                     }
                 }
-                // std::cout << "BUFFER DANS IRSSI CHECK" << buffer << std::endl;
                 irssi_check(buffer, fd);
                 if (is_connected(fd) == true)
                 {
@@ -301,7 +284,6 @@ int Server::recieve_data(int fd, int isNewUser)
             }
             else
             {
-                // std::cout << "JE SUISSSSSSSS LA " << str << std::endl;
                 nc_check(str.c_str(), fd, flag);
                 if (is_connected(fd) == true)
                 {
@@ -336,101 +318,8 @@ int Server::newUser(int fd, char buffer[1024])
 		std::cerr << "Erreur lors de l'ajout du socket client à epoll." << std::endl;
 		return 1;
 	}
-	// seulement si c une connection irssi
-	// recieve_data(fd, 1);
 	return 0;
 }
-
-
-int Server::check_nick(std::string nickname, int fd, User *user)
-{
-	std::string to_compare;
-
-	int gotten_fd;
-	if (nickname.find(' ') != std::string::npos ||
-		nickname.find(',') != std::string::npos ||
-		nickname.find('*') != std::string::npos ||
-		nickname.find('?') != std::string::npos ||
-		nickname.find('@') != std::string::npos ||
-		nickname.find('!') != std::string::npos)
-	{
-		std::cerr << "Invalid character in nickname" << std::endl;
-		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
-		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
-		return 1;
-	}
-
-	char c = nickname[0];
-	if (c == ':' || c == '#' || c == '&')
-	{
-		std::cerr << "Invalid character in nickname" << std::endl;
-		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
-		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
-		return (1);
-	}
-	if (nickname.compare("$BOT") == 0)
-	{
-		std::cerr << "Invalid character in nickname" << std::endl;
-		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
-		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
-		return (1);
-	}
-	if (nickname.length() > 20)
-	{
-		std::cerr << "Nickname is too long" << std::endl;
-		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
-		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
-		return (1);
-	}
-	for (int i = 0; nickname[i]; i++)
-	{
-		if (nickname[i] < 32 || nickname[i] > 126)
-		{
-			std::cerr << "Invalid character in nickname" << std::endl;
-			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
-			set_Error_user("ERR_ERRONEUSNICKNAME", fd);
-			return (1);
-		}
-	}
-	int flag = 0;
-	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
-	{
-		User &currentUser = *it;
-		to_compare = currentUser.getNickname();
-		gotten_fd = currentUser.getFd();
-		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
-		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); 	
-			nickname += "_";
-			user->setNickname(nickname);
-			it = _users.begin();
-			flag = 1;
-			// return (0);
-		}
-	}
-	if (flag == 1)
-	{	
-		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); 	
-		return (0);
-	}
-	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
-	{
-		User &currentUser = *it;
-		to_compare = currentUser.getNickname();
-		gotten_fd = currentUser.getFd();
-		if (to_compare == nickname && gotten_fd != fd)
-		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); 	
-			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
-			return (1);
-		}
-	}
-	std::cout << "hehooo" << std::endl;
-	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); 	
-	user->setNickname(nickname);
-	return (0);
-}
-
 
 void	Server::rmChannel(Channel Chan)
 {
@@ -445,50 +334,6 @@ void	Server::rmChannel(Channel Chan)
 	}
 }
 
-int Server::checkConnection(int fd, char buffer[1024])
-{
-	(void)(fd);
-
-	std::vector<std::string> str = get_cmdLine(buffer);
-	if (check_password(str) != 0)
-	{
-		std::cout << "\033[31mMot de passe incorecte\033[0m" << std::endl;
-	}
-	if (check_nickname(str) != 0)
-	{
-		std::cout << "\033[31m Nick name incorrecte \033[0m" << std::endl;
-	}
-	// Afficher le contenu du vecteur
-	for (std::vector<std::string>::iterator it = str.begin(); it != str.end(); ++it)
-	{
-		std::cout << "Élément : " << *it << std::endl;
-	}
-
-	// Le reste de votre logique ici...
-
-	return 1;
-	// check en premier le mdp(coder la fonction PASS)
-	// recup nickname (coder la fonction NICK)
-	// recup username firstname lastname (coder la fonction USER)
-}
-
-std::vector<std::string> Server::get_cmdLine(char buffer[1024])
-{
-	std::istringstream iss(buffer);
-
-	std::vector<std::string> words;
-	std::string word;
-
-	while (iss >> word)
-		words.push_back(word);
-
-	// for (std::vector<std::string>::iterator it = cmdLine.begin(); it != cmdLine.end(); ++it)
-	// {
-	// 	const std::string& w = *it;
-	// 	std::cout << "Mot : " << w << std::endl;
-	// }
-	return (words);
-}
 
 int Server::launchSocket()
 {
@@ -510,7 +355,7 @@ int Server::launchSocket()
 		return 1;
 	}
 	_serv.clientAddrLen = sizeof(_serv.clientAddress);
-	if (listen(_serv.serverSocket, 10) == -1) // gerer ici le nombre de connection max a attendre
+	if (listen(_serv.serverSocket, 10) == -1)
 	{
 		std::cerr << "Erreur lors de la mise en écoute de la socket." << std::endl;
 		return 1;
@@ -520,3 +365,4 @@ int Server::launchSocket()
 }
 
 //! fermer tout les fd !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// ! Momo: No such channel lors de la connection

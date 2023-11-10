@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 09:46:09 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:13:46 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,10 @@ public:
 	std::string					get_Error_user(int fd);
 	User						*getUserNo(int fd);
 	User						*getUserString(std::string nickname);
-	std::vector<std::string>	get_cmdLine(char buffer[1024]);
 
 	int							createServerSocket();
 	int							launchSocket();
 	int							recieve_data(int fd, int isNewUser);
-	int							checkConnection(int fd, char buffer[1024]);
 	int							newUser(int fd, char buffer[1024]);
 
 	int							channelExist(std::string channelName);

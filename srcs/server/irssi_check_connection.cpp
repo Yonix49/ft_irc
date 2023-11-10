@@ -3,16 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/09 17:46:24 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:21:38 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "server.hpp"
 
+int Server::irssi_check(std::string str, int fd)
+{
+	std::vector<std::string> words = get_vector_ref(str);
+	User *user = NULL; // DÃ©clarer un pointeur vers un utilisateur
+	user = getUserNo(fd);
+	try
+	{
+		if (irsii_argument_check(words, fd, user) != 0)
+		{
+			throw Error_rpl();
+		}
+	}
+	catch (const Error_rpl &ex)
+	{
+		return (1);
+	}
+	if (user->get_nc_check() == 2)
+		user->set_in_server(true);
+	return (0);
+}
 int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *user)
 {
 	int flag = 0;
@@ -128,30 +148,5 @@ int Server::No_Cap_case(std::vector<std::string> words, int fd, User *user)
 		user->setUsername(words[5]);
 		user->setRealname(words[5]);
 	}
-	return (0);
-}
-
-int Server::irssi_check(std::string str, int fd)
-{
-	std::vector<std::string> words = get_vector_ref(str);
-	User *user = NULL; // DÃ©clarer un pointeur vers un utilisateur
-	user = getUserNo(fd);
-	try
-	{
-		if (irsii_argument_check(words, fd, user) != 0)
-		{
-			throw Error_rpl();
-		}
-	}
-	catch (const Error_rpl &ex)
-	{
-		std::cerr << "Erreur : " << get_Error_user(fd) << std::endl;
-		return (1);
-	}
-
-	// std::cout << user->get_check_in_server() << "AVANT =========================================" << std::endl;
-	if (user->get_nc_check() == 2)
-		user->set_in_server(true);
-	// std::cout << user->get_check_in_server() << "APRES =========================================" << std::endl;
 	return (0);
 }

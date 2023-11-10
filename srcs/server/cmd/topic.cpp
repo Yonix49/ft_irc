@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   topic.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 13:07:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 19:02:22 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:40 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include"server.hpp"
+#include "../server.hpp"
+
+
+
 
 void	Server::topic(std::string param, int fd)
 {

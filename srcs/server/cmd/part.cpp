@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 16:11:30 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 10:50:16 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:24 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "server.hpp"
+#include "../server.hpp"
+
+
+
 
 void	Server::part(std::string param, int fd)
 {

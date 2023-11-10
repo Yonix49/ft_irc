@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/03 16:35:21 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 10:38:04 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 12:37:32 by mhajji-b         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "server.hpp"
+#include "../server.hpp"
+
+
+
 
 void	Server::quit(std::string param, int fd)
 {
