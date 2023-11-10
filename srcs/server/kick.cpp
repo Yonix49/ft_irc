@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 17:13:50 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/08 14:58:28 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 09:44:08 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,61 +77,3 @@ void	Server::kick(std::string param, int fd)
 	server._channels[i]->rmUser(*target);
 	server._channels[i]->setNbUsers(server._channels[i]->getNbUsers() - 1);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//! corriger le probleme des nicknames quand on rejoins un chan, ca devrait aussi corriger le kick
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

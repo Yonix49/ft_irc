@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:33:20 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 17:41:52 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 11:07:13 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void				sendOneRPL(std::string rpl, int fd);
             /* = = =    PING / PONG     = = = */
 // 513
 # define ERR_BADPING(nickname) (":localhost 513 " + nickname + std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\r\n")
-# define RPL_PONG ":localhost PONG localhost :localhost\r\n"
+# define RPL_PONG ":localhost PONG localhost\r\n"
 # define CMD_PING(token) ("PING :" + token + "\r\n")
 
             /* = = =    JOIN     = = = */
@@ -216,6 +216,10 @@ void				sendOneRPL(std::string rpl, int fd);
 #define BOTMSG(nickname, username, dest, msg) (std::string(":") + nickname + "!~" + username + "@" + SERVER_NAME + " PRIVMSG " + dest + " :" + msg + "\r\n")
 # define ERR_CHANOPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel operator\r\n")
 # define ERR_CHANFPRIVSNEED(nickname, chanel) (":localhost 482 " + nickname + " " + chanel + " :You're not chanel Foundator\r\n")
+#define ERR_BADCHANMASK(chanel) (":localhost 476 " + chanel + " :Bad Channel Mask\r\n")
+
+
+
 #endif
 
 #endif

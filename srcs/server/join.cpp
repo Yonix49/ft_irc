@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 15:29:49 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 11:16:52 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,11 @@ void Server::join(std::string param, int fd)
 	}
 
 	std::string	channelName = getChannelName(cmdLine[1]);
-	if (channelName.c_str() == NULL)
+	if (channelName[0] == ',')
+	{
+		sendOneRPL(ERR_BADCHANMASK(cmdLine[1]), fd);
 		return ;
+	}
 
 	int	i = server.channelExist(channelName);
 	if (i == -1)
@@ -79,8 +82,6 @@ void Server::join(std::string param, int fd)
 	}
 	return ;
 }
-
-//! essayer de join deux fois le meme channel
 
 int Server::channelExist(std::string channelName)
 {

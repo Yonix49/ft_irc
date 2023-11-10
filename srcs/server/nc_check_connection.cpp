@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/09 19:45:06 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 11:03:50 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,11 @@ int Server::nc_check(std::string str, int fd, int flag)
 	{
 		if (nc_ctrl_d_case(words, fd, user) != 0)
 		{
-			std::cout << "ctrl D case NC" << std::endl;
 			return (1);
 		}
 	}
-		if (user->get_nc_check() == 3)
-			user->set_in_server(true);
+	if (user->get_nc_check() == 3)
+		user->set_in_server(true);
 	return 0;
 }
 int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
@@ -53,8 +52,6 @@ int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
 					}
 					else
 					{
-						std::cout << "bad password" << words[1] << std::endl;
-
 						sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 						throw Error_rpl();
 					}

@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 15:33:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/03 17:14:54 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 11:16:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,15 @@
 
 std::string	getChannelName(std::string cmdLine)
 {
-	//! parser le name
 	if (cmdLine.empty() == true)
 	{
 		// rpl cahnnel name empty
-		return (NULL);
+		return (",");
 	}
+	if (cmdLine.find(" ") != std::string::npos ||
+		cmdLine.find("\a") != std::string::npos ||
+		cmdLine.find(",") != std::string::npos)
+		return (",");
 	if (cmdLine.c_str()[0] != '#')
 		return ("#" + cmdLine);
 	return (cmdLine);

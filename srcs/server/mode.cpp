@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 15:47:45 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 11:36:54 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	Server::mode(std::string param, int fd)
 	else
 	{
 		//! faire cette condition autrement sinon ca marche pas ( peut etre directement dans les fonctions)
-		// sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
+		sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
 		std::cerr << "MODE error" << std::endl;
 	}
 }

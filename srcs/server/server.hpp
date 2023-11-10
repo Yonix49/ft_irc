@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/08 21:53:51 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 09:46:09 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ public:
 	static void					kick(std::string param, int fd);
 	static void					ping(std::string param, int fd);
 
-	std::string					getAllChanToQuit(Server *server, std::string nickname);
+	std::string					getAllChanForQuit(Server *server, std::string nickname);
 	void						updateInvitedListAfterQuit(Server server, std::string nickname);
 	int							mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user);
 	int							mode_t(std::vector<std::string> cmdLine, int i, User *user);

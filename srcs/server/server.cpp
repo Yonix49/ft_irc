@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/09 20:10:18 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 11:49:23 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ int Server::createServerSocket()
 	launchSocket();
 
 	event.events = EPOLLIN;
-	event.data.fd = _serv.serverSocket; // Ajoutez le socket du serveur à l'instance epoll
+	event.data.fd = _serv.serverSocket;
 	if (epoll_ctl(_serv.epollFd, EPOLL_CTL_ADD, _serv.serverSocket, &event) == -1)
 	{
 		std::cerr << "Erreur lors de l'ajout du socket du serveur à epoll." << std::endl;
@@ -176,6 +176,12 @@ int Server::createServerSocket()
 				std::cerr << "Erreur lors de l'appel à epoll_wait." << std::endl;
 			else
 				std::cerr << "CNTRL+C detected (epoll_wait)." << std::endl;
+			for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); ++it)
+				delete *it;
+			_channels.clear();
+			for (std::vector<User>::iterator it2 = _users.begin(); it2 < _users.end(); ++it2)
+				close(it2->getFd());
+			close(_serv.clientSocket);
 			return 1;
 		}
 		for (int i = 0; i < numEvents; i++)
@@ -219,28 +225,29 @@ int Server::recieve_data(int fd, int isNewUser)
     else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
     {
         std::cout << "User disconnected" << std::endl;
-        quit("QUIT leaving", fd);
+        quit(buffer, fd);
         close(fd);
         return -1;
     }
-		std::cout << "bytes Read here" << bytesRead << std::endl;
+		// std::cout << "bytes Read here" << bytesRead << std::endl;
 
     buffer[bytesRead] = '\0';
     std::string str(buffer);                     // Convertir le buffer en std::string
-	for (int i = 0; str[i]; i++)
-    {
-        std::cout << fd << ": " << str[i] << std::endl;
-    }
+	// for (int i = 0; str[i]; i++)
+    // {
+    //     std::cout << fd << ": " << str[i] << std::endl;
+    // }
+    std::cout << fd << ": " << str << std::endl;
     while (1)
     {
         if (str[0] == '\0' || str[str.length() - 1] == '\n')
         {
-            std::cout << "Je rentre dans le break" << std::endl;
+            // std::cout << "Je rentre dans le break" << std::endl;
             break;
         }
         else
         {
-            std::cout << "je suis dans la boucle " << std::endl;
+            // std::cout << "je suis dans la boucle " << std::endl;
             flag++;
             bytesRead = recv(fd, buffer, sizeof(buffer), 0);
             if (bytesRead < 0)
@@ -251,7 +258,7 @@ int Server::recieve_data(int fd, int isNewUser)
             else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
             {
                 std::cout << "User disconnected" << std::endl;
-                quit("QUIT leaving", fd);
+                quit(buffer, fd);
                 close(fd);
                 return -1;
             }
@@ -259,11 +266,11 @@ int Server::recieve_data(int fd, int isNewUser)
             str += std::string(buffer); // Ajoutez les données reçues à la fin de la chaîne existante
         }
     }
-    std::cout << "flag == " << flag << "fd" << fd << std::endl; // CTRL D case for 1; 
-    for (int i = 0; str[i]; i++)
-    {
-        std::cout << fd << ": " << str[i] << std::endl;
-    }
+    // std::cout << "flag == " << flag << "fd" << fd << std::endl; // CTRL D case for 1; 
+    // for (int i = 0; str[i]; i++)
+    // {
+    //     std::cout << fd << ": " << str[i] << std::endl;
+    // }
     if (!str.empty() && is_connected(fd) == false) // Ici faut mettre un bool c'est que pour la connextion ca
     {
         if (str.length() >= 2 && is_connected(fd) == false)
@@ -279,7 +286,7 @@ int Server::recieve_data(int fd, int isNewUser)
                         buffer[i + 1] = ' ';
                     }
                 }
-                std::cout << "BUFFER DANS IRSSI CHECK" << buffer << std::endl;
+                // std::cout << "BUFFER DANS IRSSI CHECK" << buffer << std::endl;
                 irssi_check(buffer, fd);
                 if (is_connected(fd) == true)
                 {
@@ -294,7 +301,7 @@ int Server::recieve_data(int fd, int isNewUser)
             }
             else
             {
-                std::cout << "JE SUISSSSSSSS LA " << str << std::endl;
+                // std::cout << "JE SUISSSSSSSS LA " << str << std::endl;
                 nc_check(str.c_str(), fd, flag);
                 if (is_connected(fd) == true)
                 {
@@ -368,7 +375,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
 	}
-	if (nickname.length() > 200)
+	if (nickname.length() > 20)
 	{
 		std::cerr << "Nickname is too long" << std::endl;
 		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
@@ -393,7 +400,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		gotten_fd = currentUser.getFd();
 		if (to_compare == nickname && gotten_fd != fd && is_connected(fd) == false)
 		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); 	
 			nickname += "_";
 			user->setNickname(nickname);
 			it = _users.begin();
@@ -403,7 +410,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 	}
 	if (flag == 1)
 	{	
-		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+		sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); 	
 		return (0);
 	}
 	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
@@ -413,13 +420,13 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		gotten_fd = currentUser.getFd();
 		if (to_compare == nickname && gotten_fd != fd)
 		{
-			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); //Cette ligne me rend zinzin	
+			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); 	
 			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
 			return (1);
 		}
 	}
 	std::cout << "hehooo" << std::endl;
-	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); //Cette ligne me rend zinzin	
+	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); 	
 	user->setNickname(nickname);
 	return (0);
 }
@@ -511,3 +518,5 @@ int Server::launchSocket()
 	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
 	return (0);
 }
+
+//! fermer tout les fd !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
