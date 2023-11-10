@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 14:28:51 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 11:24:21 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 15:22:00 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int		g_signal = 0;
 
 int main(int argc, char **argv)
 {
-	// Server	serv;
 	Server &server = Server::getInstance();
 	if (argc != 3)
 	{

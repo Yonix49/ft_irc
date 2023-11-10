@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   irssi_check_connection.cpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:11:36 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:21:38 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:54:37 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 int Server::irssi_check(std::string str, int fd)
 {
 	std::vector<std::string> words = get_vector_ref(str);
-	User *user = NULL; // DÃ©clarer un pointeur vers un utilisateur
+	User *user = NULL;
 	user = getUserNo(fd);
 	try
 	{
@@ -44,7 +44,6 @@ int Server::irsii_argument_check(std::vector<std::string> words, int fd, User *u
 			flag++;	
 		}
     }
-	std::cout << "flag ===== " << flag << std::endl;
 	if (flag == 1)
 	{	
 		if (Cap_case(words, fd, user) != 0)
@@ -73,32 +72,24 @@ int Server::Cap_case(std::vector<std::string> words, int fd, User *user)
 			}
 			else
 			{
-				std::cout << "PASS 11 " << words[2] << "PASS 22" <<  std::endl;	
-				set_Error_user("ERR_PASSWDMISMATCH", fd);
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
 			}
 		}
 		else
 		{
-			set_Error_user("ERR_PASSWDMISMATCH", fd);
-			std::cout <<  "PASS 33"  << words[2] << "PASS 44" <<  std::endl;	
 			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 			return (1);
 		}
 		if (words[4] == "NICK")
 		{
 			if (check_nick(words[5], fd, user) != 0)
-			{
-				set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 				return (1);
-			}
 			user->incre_nc_check();
 		}
 		else
 		{
 			sendOneRPL(ERR_NONICKNAMEGIVEN(user->getNickname()), fd);
-			set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 			return (1);
 		}
 		user->setUsername(words[6]);
@@ -118,15 +109,12 @@ int Server::No_Cap_case(std::vector<std::string> words, int fd, User *user)
 			}
 			else
 			{
-				set_Error_user("ERR_PASSWDMISMATCH", fd);
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
 			}
 		}
 		else
 		{
-			set_Error_user("ERR_PASSWDMISMATCH", fd);
-			std::cout <<  "PASS 33"  << words[2] << "PASS 44" <<  std::endl;	
 			sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 			return (1);
 		}
@@ -134,7 +122,6 @@ int Server::No_Cap_case(std::vector<std::string> words, int fd, User *user)
 		{
 			if (check_nick(words[3], fd, user) != 0)
 			{
-				set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 				return (1);
 			}
 			user->incre_nc_check();
@@ -142,7 +129,6 @@ int Server::No_Cap_case(std::vector<std::string> words, int fd, User *user)
 		else
 		{
 			sendOneRPL(ERR_NONICKNAMEGIVEN(user->getNickname()), fd);
-			set_Error_user("ERR_NONICKNAMEGIVEN", fd);
 			return (1);
 		}
 		user->setUsername(words[5]);

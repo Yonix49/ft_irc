@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/03 16:35:21 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:32 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 15:37:00 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,13 @@
 
 void	Server::quit(std::string param, int fd)
 {
-	std::cout << "APPEL DE QUIT " << std::endl;
-
-	// faire quitter le user de tout les channels, de tout les vecteurs etc check dans les_bails.txt
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
-	std::cout << "PARAM = " << param << std::endl;
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
 	std::string reason;
 	std::string partStr;
 
 	user->setHasQuit(1);
-	for ( size_t i = 0 ; i < cmdLine.size(); i++)
-		std::cout << "cmdLine[" << i << "] = " << cmdLine[i] << std::endl;
 	if (cmdLine.size() > 1)
 		reason = " " + cmdLine[1];
 	else
@@ -63,14 +57,11 @@ std::string	Server::getAllChanForQuit(Server *server, std::string nickname)
 
 	for (std::vector<Channel *>::iterator it = server->_channels.begin(); it != server->_channels.end(); ++it)
 	{
-		std::cout << "Je suis ici " << std::endl;
 		if ((*it)->isUserinchan(nickname, 0) > -1)
 		{
 			chans = chans + (*it)->getName();
 			if (it + 1 < server->_channels.end())
-			{
 				chans = chans + ",";
-			}
 		}
 	}
 	return (chans);

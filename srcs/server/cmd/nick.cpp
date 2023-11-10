@@ -3,22 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:16:25 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:21 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 15:32:06 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
-
-
-
 void Server::HandleNickCommand(std::string param, int fd)
 {
-	// Server server;
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> words = server.get_vector_ref(param);
 	try
@@ -35,8 +31,7 @@ void Server::HandleNickCommand(std::string param, int fd)
 
 		}
 	}
-	catch (const Error_rpl &ex)
-	{
+	catch (const Error_rpl &ex) {
 	}
 }
 
@@ -118,11 +113,9 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		if (to_compare == nickname && gotten_fd != fd)
 		{
 			sendOneRPL(ERR_NICKNAMEINUSE(to_compare), fd); 	
-			std::cout << "same user_name found" << to_compare << "  " << nickname << std::endl;
 			return (1);
 		}
 	}
-	std::cout << "hehooo" << std::endl;
 	sendOneRPL(NICK(user->getNickname(), user->getUsername(), nickname), fd); 	
 	user->setNickname(nickname);
 	return (0);

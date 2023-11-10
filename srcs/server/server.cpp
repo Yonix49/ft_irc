@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:21:18 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 15:45:14 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,7 @@ Server::Server()
 Server::~Server()
 {
 }
-// Constructeur
-// Server::Server()
-// {
-// 	_checking_nc = 0;
-// }
+
 Server::Server(int port, const std::string &password)
 {
 	_port = port;
@@ -114,6 +110,7 @@ std::vector<std::string> Server::get_vector_ref(const std::string &str)
 	}
 	return (words);
 }
+
 std::string Server::get_password(void)
 {
 	return (_password);
@@ -126,14 +123,14 @@ void	Server::setEvent(struct epoll_event	event)
 
 void Server::set_Error_user(std::string error, int fd)
 {
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	User *user = NULL;
 	user = getUserNo(fd);
 	user->setError(error);
 }
 
 std::string Server::get_Error_user(int fd)
 {
-	User *user = NULL; // Déclarer un pointeur vers un utilisateur
+	User *user = NULL;
 	user = getUserNo(fd);
 	if (!user)
 		return (NULL);
@@ -145,7 +142,7 @@ int Server::createServerSocket()
 {
 	int numEvents;
 	struct epoll_event event;
-	struct epoll_event events[10]; // Nombre maximal d'événements à gérer
+	struct epoll_event events[10]; // Nombre maximal d'événements à gérer `
 	int fd;
 	int isNewUser;
 
@@ -174,14 +171,16 @@ int Server::createServerSocket()
 		{
 			if (!g_signal)
 				std::cerr << "Erreur lors de l'appel à epoll_wait." << std::endl;
-			else
-				std::cerr << "CNTRL+C detected (epoll_wait)." << std::endl;
 			for (std::vector<Channel *>::iterator it = _channels.begin(); it < _channels.end(); ++it)
 				delete *it;
+			for (std::vector<Channel *>::iterator it3 = _deletedChan.begin(); it3 < _deletedChan.end(); ++it3)
+				delete *it3;
 			_channels.clear();
 			for (std::vector<User>::iterator it2 = _users.begin(); it2 < _users.end(); ++it2)
 				close(it2->getFd());
 			close(_serv.clientSocket);
+			close(_serv.epollFd);
+			close(_serv.serverSocket);
 			return 1;
 		}
 		for (int i = 0; i < numEvents; i++)
@@ -221,9 +220,8 @@ int Server::recieve_data(int fd, int isNewUser)
         std::cerr << "Erreur lors de la réception de données du client." << std::endl;
     else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
     {
-        std::cout << "User disconnected" << std::endl;
         quit(buffer, fd);
-        close(fd);
+        close(fd);					
         return -1;
     }
 
@@ -232,9 +230,7 @@ int Server::recieve_data(int fd, int isNewUser)
     while (1)
     {
         if (str[0] == '\0' || str[str.length() - 1] == '\n')
-        {
             break;
-        }
         else
         {
             flag++;
@@ -245,7 +241,6 @@ int Server::recieve_data(int fd, int isNewUser)
             }
             else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
             {
-                std::cout << "User disconnected" << std::endl;
                 quit(buffer, fd);
                 close(fd);
                 return -1;
@@ -254,7 +249,7 @@ int Server::recieve_data(int fd, int isNewUser)
             str += std::string(buffer); 
         }
     }
-
+	// std::cout << "COMMAND RECIEVED : " << str << std::endl;
     if (!str.empty() && is_connected(fd) == false)
     {
         if (str.length() >= 2 && is_connected(fd) == false)
@@ -296,9 +291,7 @@ int Server::recieve_data(int fd, int isNewUser)
         }
     }
     else if (isNewUser == 0 && is_connected(fd) == true)
-    {
         use_map_function(str, fd);
-    }
     return (0);
 }
 
@@ -309,6 +302,7 @@ int Server::newUser(int fd, char buffer[1024])
 	int bytesSent;
 	(void)bytesSent;
 	User newUser("");
+
 	newUser.setFd(fd);
 	_users.push_back(newUser);
 	clientEvent.events = EPOLLIN;
@@ -327,8 +321,8 @@ void	Server::rmChannel(Channel Chan)
 	{
 		if (!(*it)->getName().compare(Chan.getName()))
 		{
+			_deletedChan.push_back(*it);
 			_channels.erase(it);
-			std::cout << "le channel " << (*it)->getName() << " est supprimer" << std::endl;
 			return ;
 		}
 	}
@@ -360,9 +354,5 @@ int Server::launchSocket()
 		std::cerr << "Erreur lors de la mise en écoute de la socket." << std::endl;
 		return 1;
 	}
-	std::cout << "Server socket ready : " << _serv.serverSocket << std::endl;
 	return (0);
 }
-
-//! fermer tout les fd !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// ! Momo: No such channel lors de la connection

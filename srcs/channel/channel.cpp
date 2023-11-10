@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:46:17 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/09 17:19:07 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/10 15:34:49 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,6 @@ int	Channel::addUser(User user, int isOperator, std::string channelName, int fd)
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
 	else
 		sendOneRPL(RPL_NOTOPIC(user.getNickname(), channelName), fd);
-	std::cout << "list Users = " << getListUsers() << std::endl;
 	for (std::vector<User>::iterator it = _users.begin(); it < _users.end(); ++it)
 	{
 		sendOneRPL(RPL_NAMREPLY(newnick, "#" + channelName, getListUsers()), it->getFd());
@@ -339,10 +338,7 @@ void	Channel::sendRPLtoChan(std::string rpl)
 {
 
 	for (unsigned long i = 0; i < _users.size(); i++)
-	{
 		sendOneRPL(rpl, _users[i].getFd());
-		// std::cout << "msg send to " << _users[i].getFd() << std::endl;
-	}
 }
 
 

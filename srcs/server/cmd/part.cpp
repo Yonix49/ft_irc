@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/01 16:11:30 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:24 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:51:46 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
-
-
-
 void	Server::part(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
 	
@@ -59,7 +56,6 @@ void	Server::part(std::string param, int fd)
 			server._channels[i]->rmOperator(*user);
 		server._channels[i]->rmUser(*user);
 		server._channels[i]->setNbUsers(server._channels[i]->getNbUsers() - 1);
-		std::cout << "ON SUPPRIME LE USER IICIIIIIIIII DU CHAN SUIVANT :" << server._channels[i]->getName() << std::endl;
 
 		// si il n'y a plus de user dans le channel, supprimer le channel
 		if (server._channels[i]->getNbUsers() == 0)
@@ -67,4 +63,3 @@ void	Server::part(std::string param, int fd)
 		j++;
 	}
 }
-

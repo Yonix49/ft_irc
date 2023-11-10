@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 17:13:50 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:03 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:46:02 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
-
-
-
 
 void	Server::kick(std::string param, int fd)
 {

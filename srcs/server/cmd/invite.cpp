@@ -3,20 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   invite.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 14:05:02 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:00 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:46:45 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
-
-
 void	Server::invite(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
 

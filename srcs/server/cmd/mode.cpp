@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/27 11:34:55 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:08 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 16:11:59 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
-
-
-
 
 void	Server::mode(std::string param, int fd)
 {
@@ -23,17 +20,18 @@ void	Server::mode(std::string param, int fd)
 
 	int	i = 0;
 	if (cmdLine.size() > 4)
-		return ; // rien envoyer juste ne pas executer la commande 
+		return ;
 	if (cmdLine.size() < 3)
 	{
 		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "MODE"), fd);
 		return ;
 	}
 	i = server.channelExist(cmdLine[1]);
-	if (i == -1)
+	if (i == -1 && cmdLine[1][0] != '#' && !cmdLine[2].compare("+i"))
+		return ;
+	else if (i == -1)
 	{
 		sendOneRPL(ERR_NOSUCHCHANNEL((*user).getNickname(), cmdLine[1]), fd);
-		// std::cout << "RETURN -2" << std::endl;
 		return ;
 	}
 	if (server._channels[i]->isUserinchan(user->getNickname(), 0) == -1)
@@ -48,26 +46,15 @@ void	Server::mode(std::string param, int fd)
 		else if (cmdLine.size() > 2 && cmdLine[2][1] == 'k')
 			server.mode_k(cmdLine, i, fd, user);
 		else if (cmdLine.size() == 3 && cmdLine[2][1] == 'i')
-			server.mode_i(cmdLine, i);
+			server.mode_i(cmdLine, i, user);
 		else if (cmdLine.size() == 3 && cmdLine[2][1] == 't')
 			server.mode_t(cmdLine, i, user);
 		else if (cmdLine.size() == 4 && cmdLine[2][1] == 'o')
 			server.mode_o(cmdLine, i, fd, user);
 	}
 	else
-	{
-		//! faire cette condition autrement sinon ca marche pas ( peut etre directement dans les fonctions)
 		sendOneRPL(ERR_CHANOPRIVSNEED(user->getNickname(), cmdLine[1]), fd);
-		std::cerr << "MODE error" << std::endl;
-	}
 }
-
-
-
-
-// au moins mode i et mode t ne sont pas encore bon avec genre +i et -i
-
-
 
 int		Server::mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user)
 {
@@ -85,7 +72,7 @@ int		Server::mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	}
 	if (cmdLine[2][0] == '+')
 	{
-		if (target->getisOperator() < 1)
+		if (user->getisOperator() == 2 || (user->getisOperator() == 1 && target->getisOperator() < 1))
 		{
 			target->setIsOperator(1);
 			_channels[i]->addOperator(*target);
@@ -99,7 +86,7 @@ int		Server::mode_o(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	}
 	else if (cmdLine[2][0] == '-')
 	{
-		if (target->getisOperator() < 2)
+		if (user->getisOperator() == 2 && target->getisOperator() < 2)
 		{
 			target->setIsOperator(0);
 			_channels[i]->rmOperator(*target);
@@ -126,7 +113,7 @@ int		Server::mode_l(std::vector<std::string> cmdLine, int i, User *user)
 		if (limit > 0 && limit < 2147483647)
 			_channels[i]->setLimitUsers(limit);
 		_channels[i]->setMode_l(true);
-		std::cout << "LIMITUSER SET TO: " << _channels[i]->getLimitUsers() << std::endl;
+		// std::cout << "LIMITUSER SET TO: " << _channels[i]->getLimitUsers() << std::endl;
 	}
 	else if (_channels[i]->getMode_l() == true && cmdLine[2][0] == '-')
 	{	
@@ -170,7 +157,7 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 		}
 		else
 		{
-			std::cout << "FAILED TO SET PASSWORD: " << _channels[i]->getLimitUsers() << std::endl;
+			// std::cout << "FAILED TO SET PASSWORD: " << _channels[i]->getLimitUsers() << std::endl;
 			sendOneRPL(ERR_INVALIDMODEPARAM(user->getNickname(), cmdLine[1], cmdLine[2], cmdLine[3]), fd);
 			return ( -3);
 		}
@@ -185,11 +172,19 @@ int		Server::mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user)
 	return (0);
 }
 
-int		Server::mode_i(std::vector<std::string> cmdLine, int i)
+int		Server::mode_i(std::vector<std::string> cmdLine, int i, User *user)
 {
+	std::string mode;
 	if (_channels[i]->getMode_i() == false && cmdLine[2][0] == '+')
+	{
 		_channels[i]->setMode_i(true);
+		mode = "+i";
+	}
 	else if (cmdLine[2][0] == '-')
+	{
 		_channels[i]->setMode_i(false);
+		mode = "-i";
+	}
+	_channels[i]->sendRPLtoChan(MODE_CHANNEL(user->getNickname(), user->getUsername(), cmdLine[1], mode));
 	return (0);
 }

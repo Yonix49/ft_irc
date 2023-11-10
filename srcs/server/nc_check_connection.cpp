@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nc_check_connection.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:21:51 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:56:20 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,8 @@ int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
 			{
 				if (words[0] == "PASS" && user->get_nc_check() == 0)
 				{
-					std::cout << "je suis mdp " << std::endl;
 					if (words.size() == 2 && words[1].compare(_password) == 0)
 					{
-						std::cout << "good password" << std::endl;
 						user->incre_nc_check();
 					}
 					else
@@ -62,8 +60,7 @@ int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
 					{
 						if (check_nick(words[1], fd, user) != 0)
 						{
-							throw Error_rpl();
-							
+							throw Error_rpl();							
 						}
 						else
 						{
@@ -78,7 +75,6 @@ int Server::nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user)
 				{ 
 					if (check_user_nc(fd, user, words) != 0)
 					{
-						std::cerr << "Erreur commande USER" << std::endl;
 						throw Error_rpl();
 					}
 					else
@@ -109,22 +105,18 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 	{
 		if (words[1].empty() || words[1].length() <= 1)
 		{
-			std::cout << "je suis la 2" << words[1] << std::endl;
 			sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
-			set_Error_user("ERR_NEEDMOREPARAMS", fd);
 			return (1);
 		}
 		else 
 		{
 			if (words[1].length() > 10)
 				words[1] = words[1].substr(0, 10);
-			std::cout << "set username" << words[1] << std::endl;
 			user->setUsername(words[1]);
 		}
 		if (words[2] != "0" && words[3] != "*")
 		{
 			sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
-			set_Error_user("ERR_NEEDMOREPARAMS", fd);
 			return (1);
 		}
 		else if (!words[4].empty())
@@ -134,14 +126,11 @@ int Server::check_user_nc(int fd, User *user, std::vector<std::string> words)
 				words[4] = ":" + words[4];
 			}
 			user->setRealname(words[4]);
-			std::cout << "real name " << words[4] << std::endl;
 			return (0);		
 		}
 	}
 	else
 	{
-		std::cout << "Usage of USER Parameters: <username> 0 * <realname>" << std::endl;
-		set_Error_user("ERR_NEEDMOREPARAMS", fd);
 		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
 		return (1);
 	}
@@ -158,13 +147,11 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 		{
 			if (words[1].compare(_password) == 0)
 			{
-				std::cout << "good password" << std::endl;
 				user->incre_nc_check();
 				
 			}
 			else
 			{
-				std::cout << "bad password" << words[1] << std::endl; 
 				sendOneRPL(ERR_PASSWDMISMATCH(user->getNickname()), fd);
 				return (1);
 			}
@@ -180,7 +167,6 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 
 					if (check_nick(elementApresNick, fd, user) == 0)
 					{
-						std::cout << "jai bien set le user" << std::endl;
 						user->incre_nc_check();
 						continue ;
 					}
@@ -208,24 +194,18 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 				}
 				if (elementsApresUser.size() != 5)
 				{
-					sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"),
-							fd);
+					sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "USER"), fd);
 					return (1);
 				}
 				else
 				{
-					
-					std::cout << "je vais check le user" << std::endl;
 					if (check_user_nc(fd, user, elementsApresUser) != 0)
 					{
-						std::cerr << "Erreur commande USER" << std::endl;
 						return (1);
 					}
 					else
-					{
-						
+					{	
 						user->incre_nc_check();
-						std::cout << "nc == " << user->get_nc_check() << std::endl;
 						return (0);
 					}
 				}

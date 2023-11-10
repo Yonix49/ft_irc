@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:13:46 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 15:01:02 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #define SERVER_HPP
 #include "../includes.hpp"
 #include "../channel/channel.hpp"
-// # include "../user/user.hpp"
 #include <map>
 #include <functional>
 #include <string>
@@ -93,7 +92,7 @@ public:
 	int							mode_t(std::vector<std::string> cmdLine, int i, User *user);
 	int							mode_l(std::vector<std::string> cmdLine, int i, User *user);
 	int							mode_k(std::vector<std::string> cmdLine, int i, int fd, User *user);
-	int							mode_i(std::vector<std::string> cmdLine, int i);
+	int							mode_i(std::vector<std::string> cmdLine, int i, User *user);
 
 	int							check_nickname(std::vector<std::string> str);
 	int							check_password(std::vector<std::string> str);
@@ -108,7 +107,6 @@ public:
 	int							irsii_argument_check(std::vector<std::string> words, int fd, User *user);
 	int							check_user_irsi(int fd, User *user, std::vector<std::string> words);
 
-	// containers map
 	void						addCommand(const std::string &command, CommandFunction function);
 	void						initializeCommandMap();
 	int							use_map_function(std::string buffer, int fd);
@@ -130,7 +128,6 @@ public:
 		virtual const char *what() const throw()
 		{
 			return ("Error");
-			// return errorMessage.c_str();
 		}
 	};
 
@@ -140,6 +137,7 @@ private:
 	std::string 				_password;
 	std::vector<User>			_users;
 	std::vector<Channel *>		_channels;
+	std::vector<Channel *>		_deletedChan;
 	int							_checking_nc;
 	User						*_userTemp;
 	std::string					_error;

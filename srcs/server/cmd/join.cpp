@@ -3,33 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:36:54 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 15:34:23 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
-
-
-
-// ne pas oublier de gerer si un channel est supprime ou pas
-// si oui, il faut enlever le channel du vector is_invited sur les users invites
-
-// bien gerer la deconection, si un user est inviter et quitte le serveur, il faut le retirer
-// de la liste des invites au channel (ca peut causer des soucis en cas de reconnection sur le meme client)
-
-
-
-
 void Server::join(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
-	std::cout << "COMMAND JOIN IS CALLED" << std::endl;
 	std::string	newnick;
 
 	if (cmdLine.size() < 2)

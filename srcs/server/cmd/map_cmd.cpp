@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   map_cmd.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:07:09 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:05 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:45:58 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
-
-
 
 int Server::use_map_function(std::string buffer, int fd)
 {

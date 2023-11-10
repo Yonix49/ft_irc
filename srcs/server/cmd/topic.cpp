@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   topic.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhajji-b <mhajji-b@student.42.fr>          +#+  +:+       +#+        */
+/*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 13:07:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 12:37:40 by mhajji-b         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:53:33 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
-
-
-
 void	Server::topic(std::string param, int fd)
 {
-	Server &server = Server::getInstance(); // Obtenez une référence à l'instance unique de la classe
+	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
 
@@ -34,8 +31,6 @@ void	Server::topic(std::string param, int fd)
 	}
 	if (cmdLine.size() == 2)
 	{
-		// envoyer rpl TOPIC si il y en a un, ou RPL_NOTOPIC si ya pas
-		// std::cout << server._channels[i]->getTopic() << std::endl;
 		if (server._channels[i]->getTopic().empty() == true)
 			sendOneRPL(RPL_NOTOPIC(user->getNickname(), cmdLine[1]), fd);
 		else
@@ -45,18 +40,14 @@ void	Server::topic(std::string param, int fd)
 	{
 		if (server._channels[i]->getMode_t() == true && user->getisOperator() < 1)
 			return ;
-		// clear le topic
-		// std::cout << "remove topic" << std::endl;
 		server._channels[i]->getTopic().clear();
 		server._channels[i]->sendRPLtoChan(RPL_NOTOPIC(user->getNickname(), cmdLine[1]));
 	}
 	else
 	{
-		// set un nouveau topic ou remplacer l'ancien
-		// ne pas oublier de prendre tout le topic et pas que le premier mot
 		if (server._channels[i]->getMode_t() == true && user->getisOperator() < 1)
 			return ;
-		
+
 		if (server._channels[i]->getTopic().empty() == false)
 			server._channels[i]->getTopic().clear();
 
