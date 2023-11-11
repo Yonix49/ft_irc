@@ -6,19 +6,32 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 15:22:57 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 15:34:23 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 15:05:39 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../server.hpp"
 
+void	Server::print(int fd)
+{
+	for (std::vector<User>::iterator it = _users.begin(); it != _users.end(); ++it)
+	{
+		std::cout << "======== " << it->getNickname() << std::endl;
+		std::cout << "======== " << it->getFd() << std::endl;
+		std::cout << "======== " << &it << std::endl;
+		std::cout << "=================================================	 " << std::endl;
+		if (it->getFd() == fd)
+			std::cout << "FD FOUUUUUUND" << std::endl;
+	}
+}
+
 void Server::join(std::string param, int fd)
 {
 	Server &server = Server::getInstance();
 	User *user = server.getUserNo(fd);
+	(void)(user);
 	std::vector<std::string> cmdLine = server.get_vector_ref(param);
 	std::string	newnick;
-
 	if (cmdLine.size() < 2)
 	{
 		sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "JOIN"), fd);

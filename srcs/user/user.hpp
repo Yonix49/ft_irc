@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:32:47 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 10:47:13 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 12:04:49 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,21 @@ public:
 	int							&getisOperator();
 	int							&getisFounder();
 	int							&getIsKick();
+	int							&getFlagNc();
 	int							getisInvited(std::string channelName);
 	bool						&get_check_in_server();
 	std::string					&Get_Error();
+	std::string					&getBuffer();
 	int							&get_nc_check(void);
 	int							&getHasQuit(void);
 	void						setFd(int fd);
 	void						setIsKick(int fd);
+	void						setFlagNc(int flagNc);
 	void						setHasQuit(int hasQuit);
 	void						setNickname(std::string name);
 	void						setIsOperator(int isOperator);
 	void						setIsFounder(int isOperator);
+	void						setBuffer(std::string buffer);
 	void						setUsername(std::string name);
 	void						setRealname(std::string name);
 	void						set_in_server(bool _in_server);
@@ -66,5 +70,7 @@ private:
 	std::string					_error;
 	int							_hasQuit;
 	int							_isKick;
+	int							_flagNc;
+	std::string					_buffer;
 };
 

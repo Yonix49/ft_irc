@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:04:18 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 15:45:14 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 15:39:49 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ User *Server::getUserNo(int fd)
 			return &(*it);
 	}
 	return (NULL);
+
 }
 
 int findUser(std::string str, std::vector<User> users)
@@ -153,7 +154,8 @@ int Server::createServerSocket()
 		std::cerr << "Erreur lors de la création d'epoll." << std::endl;
 		return 1;
 	}
-	launchSocket();
+	if (launchSocket() == 1)
+		return 1;
 
 	event.events = EPOLLIN;
 	event.data.fd = _serv.serverSocket;
@@ -206,50 +208,40 @@ int Server::createServerSocket()
 		}
 	}
 	close(_serv.clientSocket);
+	close(_serv.serverSocket);
+	close(_serv.epollFd);
 	return (_serv.serverSocket);
 }
-
 
 int Server::recieve_data(int fd, int isNewUser)
 {
     int bytesRead;
     char buffer[1024];
-    int flag = 0;
     bytesRead = recv(fd, buffer, sizeof(buffer), 0);
     if (bytesRead < 0)
         std::cerr << "Erreur lors de la réception de données du client." << std::endl;
     else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
     {
+		std::map<int, MyData>::iterator it = _buffer_stock.find(fd);	
+		if (it->first == fd)
+			_buffer_stock.erase(it);
         quit(buffer, fd);
-        close(fd);					
+        close(fd);
         return -1;
     }
-
     buffer[bytesRead] = '\0';
-    std::string str(buffer);
-    while (1)
-    {
-        if (str[0] == '\0' || str[str.length() - 1] == '\n')
-            break;
-        else
-        {
-            flag++;
-            bytesRead = recv(fd, buffer, sizeof(buffer), 0);
-            if (bytesRead < 0)
-            {
-                std::cerr << "Erreur lors de la réception de données du client." << std::endl;
-            }
-            else if (bytesRead == 0 || strncmp(buffer, "QUIT", 4) == 0)
-            {
-                quit(buffer, fd);
-                close(fd);
-                return -1;
-            }
-            buffer[bytesRead] = '\0';
-            str += std::string(buffer); 
-        }
-    }
-	// std::cout << "COMMAND RECIEVED : " << str << std::endl;
+	MyData data;
+	data.flag = 0;
+	_buffer_stock.insert(std::make_pair(fd, data));
+	std::map<int, MyData>::iterator it = _buffer_stock.find(fd);
+	if (it->first == fd)
+		it->second.buffer += buffer;
+	std::string str(it->second.buffer);
+	if (str[0] != '\0' && str[str.length() - 1] != '\n')
+	{
+		it->second.flag = 1;
+		return -1;
+	}
     if (!str.empty() && is_connected(fd) == false)
     {
         if (str.length() >= 2 && is_connected(fd) == false)
@@ -279,7 +271,7 @@ int Server::recieve_data(int fd, int isNewUser)
             }
             else
             {
-                nc_check(str.c_str(), fd, flag);
+                nc_check(str.c_str(), fd);
                 if (is_connected(fd) == true)
                 {
                     std::string welcomeMessage = RPL_WELCOME(_users.back().getNickname());
@@ -291,7 +283,10 @@ int Server::recieve_data(int fd, int isNewUser)
         }
     }
     else if (isNewUser == 0 && is_connected(fd) == true)
+	{
         use_map_function(str, fd);
+	}
+    _buffer_stock.erase(it);
     return (0);
 }
 
@@ -333,7 +328,7 @@ int Server::launchSocket()
 {
 	int option = 1;
 	_serv.serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (_serv.serverSocket == -1)
+	if (_serv.serverSocket == 0)
 	{
 		std::cerr << "error socket" << std::endl;
 		return 1;
@@ -341,10 +336,12 @@ int Server::launchSocket()
 	_serv.serverAddress.sin_family = AF_INET;
 	_serv.serverAddress.sin_addr.s_addr = INADDR_ANY;
 	_serv.serverAddress.sin_port = htons(_port);
-	if (setsockopt(_serv.serverSocket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &option, sizeof(option)) < 0)
+	if (setsockopt(_serv.serverSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) < 0)
 		throw std::runtime_error("Setsockopt failed");
 	if (bind(_serv.serverSocket, (struct sockaddr *)&_serv.serverAddress, sizeof(_serv.serverAddress)) == -1)
 	{
+		close(_serv.serverSocket);
+		close(_serv.epollFd);
 		std::cerr << "Erreur lors de la liaison de la socket à l'adresse et au port." << std::endl;
 		return 1;
 	}

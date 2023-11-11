@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 12:16:25 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 15:32:06 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 10:14:25 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 		nickname.find('@') != std::string::npos ||
 		nickname.find('!') != std::string::npos)
 	{
-		std::cerr << "Invalid character in nickname" << std::endl;
 		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
 		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return 1;
@@ -56,14 +55,12 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 	char c = nickname[0];
 	if (c == ':' || c == '#' || c == '&')
 	{
-		std::cerr << "Invalid character in nickname" << std::endl;
 		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
 		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
 	}
 	if (nickname.compare("$BOT") == 0)
 	{
-		std::cerr << "Invalid character in nickname" << std::endl;
 		sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
 		set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 		return (1);
@@ -79,7 +76,7 @@ int Server::check_nick(std::string nickname, int fd, User *user)
 	{
 		if (nickname[i] < 32 || nickname[i] > 126)
 		{
-			std::cerr << "Invalid character in nickname" << std::endl;
+
 			sendOneRPL(ERR_ERRONEUSNICKNAME(user->getNickname()), fd);
 			set_Error_user("ERR_ERRONEUSNICKNAME", fd);
 			return (1);

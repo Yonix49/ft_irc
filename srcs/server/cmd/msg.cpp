@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/02 18:09:38 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/10 15:31:38 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 15:07:42 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ int Server::message_notice(std::vector<std::string> words, int fd, User *user,
 		to_compare = currentUser.getNickname();
 		if (to_compare == words[1])
 		{
-			std::cout << words[1] << "words === " << std::endl;
 			flag++;
 			break ;
 		}

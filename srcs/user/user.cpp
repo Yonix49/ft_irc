@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/24 15:35:11 by kgezgin           #+#    #+#             */
-/*   Updated: 2023/11/06 10:48:10 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 12:10:52 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,10 @@ User::User()
 	_isFounder = 0;
 	_check_nc = 0;
 	_hasQuit = 0;
+	_flagNc = 0;
 	_in_server = false;
 	_nickname = "";
+	_buffer = "";
 }
 
 User::User(std::string name) : _nickname(name)
@@ -36,10 +38,12 @@ User::~User()
 User::User(const User &src)
 {
 	_nickname = src._nickname;
+	_buffer = src._buffer;
 	_fd = src._fd;
 	_isOperator = src._isOperator;
 	_check_nc = 0;
 	_hasQuit = 0;
+	_flagNc = 0;
 	_in_server = src._in_server;
 }
 // Opérateur d'assignation
@@ -47,11 +51,12 @@ User &User::operator=(const User &src)
 {
 	if (this != &src)
 	{
-		_nickname = src._nickname;
+		_buffer = src._buffer;
 		_fd = src._fd;
 		_isOperator = src._isOperator;
 		_check_nc = 0;
 		_hasQuit = 0;
+		_flagNc = src._flagNc;
 		_in_server = src._in_server;
 	}
 	return *this;
@@ -138,6 +143,11 @@ int		&User::getIsKick()
 	return (_isKick);
 }
 
+int		&User::getFlagNc()
+{
+	return (_flagNc);
+}
+
 void	User::setIsOperator(int isOperator)
 {
 	_isOperator = isOperator;
@@ -154,6 +164,20 @@ void	User::setIsKick(int isKick)
 	_isKick = isKick;
 }
 
+void	User::setFlagNc(int flagNc)
+{
+	_flagNc = flagNc;
+}
+
+void	User::setBuffer(std::string buffer)
+{
+	_buffer += buffer;
+}
+
+std::string		&User::getBuffer()
+{
+	return (_buffer);
+}
 
 void	User::addisInvited(std::string channelName)
 {

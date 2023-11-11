@@ -6,24 +6,26 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/29 16:14:40 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 14:56:20 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 15:07:24 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.hpp"
 
-int Server::nc_check(std::string str, int fd, int flag)
+int Server::nc_check(std::string str, int fd)
 {
 	std::vector<std::string> words = get_vector_ref(str);
 	User *user = getUserNo(fd);
 	if (!user)
 		return (1);
-	if (flag == 0)
+	// if (flag == 0)
+	std::map<int, MyData>::iterator it = _buffer_stock.find(fd);
+	if (it->second.flag == 0)
 	{
 		if (nc_not_ctrl_d(words, fd, user) != 0)
 			return (1);
 	}
-	else if (flag >= 1)
+	else if (it->second.flag == 1)
 	{
 		if (nc_ctrl_d_case(words, fd, user) != 0)
 		{
@@ -141,14 +143,20 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 {
 	std::vector<std::string>::iterator it;
 	std::vector<std::string> elementsApresUser;
+	int							i = 0;
 	for (it = words.begin(); it != words.end(); ++it)
 	{
+		i++;
 		if (user->get_nc_check() == 0)
 		{
-			if (words[1].compare(_password) == 0)
+			if (words.size() >= 2 && words[1].compare(_password) != 0)
+			{
+				sendOneRPL(ERR_UNKNOWNCOMMAND(user->getNickname(), words[0]), fd);
+				return (1);
+			}
+			if (words.size() >= 2 && words[1].compare(_password) == 0)
 			{
 				user->incre_nc_check();
-				
 			}
 			else
 			{
@@ -158,13 +166,11 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 		}
 		if (user->get_nc_check() == 1)
 		{
-			std::cout << *it  << " == NICK" << std::endl;
 			if (*it == "NICK")
 			{
-		        if (it + 1 != words.end()) // VÃ©rifie si it + 1 est encore valide
+		        if (it + 1 != words.end()) 
 				{
 					std::string elementApresNick = *(it + 1); 
-
 					if (check_nick(elementApresNick, fd, user) == 0)
 					{
 						user->incre_nc_check();
@@ -174,8 +180,8 @@ int Server::nc_ctrl_d_case(std::vector<std::string> words, int fd, User *user)
 					{
 				    	sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(), "NICK"), fd);
 						return (1);
-				    }
-			    }
+					}
+				}
 				else
 				{
 					sendOneRPL(ERR_NEEDMOREPARAMS(user->getNickname(),"NICK"), fd);

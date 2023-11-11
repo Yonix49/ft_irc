@@ -6,7 +6,7 @@
 /*   By: kgezgin <kgezgin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 18:02:05 by mhajji-b          #+#    #+#             */
-/*   Updated: 2023/11/10 15:01:02 by kgezgin          ###   ########.fr       */
+/*   Updated: 2023/11/11 14:03:53 by kgezgin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ public:
 
 	int							check_nickname(std::vector<std::string> str);
 	int							check_password(std::vector<std::string> str);
-	int							nc_check(std::string str, int fd, int flag);
+	int							nc_check(std::string str, int fd);
 	int 						nc_not_ctrl_d(std::vector<std::string> words, int fd , User *user);
 	int 						nc_ctrl_d_case(std::vector<std::string> words, int fd , User *user);
 
@@ -122,6 +122,9 @@ public:
 	int 						Cap_case(std::vector<std::string> words, int fd, User *user);
 	int 						No_Cap_case(std::vector<std::string> words, int fd, User *user);
 
+	void						print(int fd);
+
+
 	class Error_rpl : public std::exception
 	{
 	public:
@@ -143,6 +146,13 @@ private:
 	std::string					_error;
 	std::map<int, std::string>	errorMessages;
 	std::map<std::string, CommandFunction> commandMap;
+	
+	struct MyData {
+    std::string buffer;
+    int flag;
+	};
+	
+	std::map<int, MyData> _buffer_stock;
 };
 
 int findUser(std::string str, std::vector<User> users);
